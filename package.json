@@ -1,0 +1,28 @@
+{
+  "name": "com.unity.render-pipelines.universal",
+  "description": "optimized for weixin-mini-games based on unity urp 14.0.8",
+  "version": "14.0.8",
+  "unity": "2022.2",
+  "displayName": "Universal RP",
+  "dependencies": {
+    "com.unity.mathematics": "1.2.1",
+    "com.unity.burst": "1.8.4",
+    "com.unity.render-pipelines.core": "14.0.8",
+    "com.unity.shadergraph": "14.0.8"
+  },
+  "keywords": [
+    "graphics",
+    "performance",
+    "rendering",
+    "mobile",
+    "render",
+    "pipeline"
+  ],
+  "samples": [
+    {
+      "displayName": "URP Package Samples",
+      "description": "Collection of scenes showcasing different features of the Universal Render Pipeline.",
+      "path": "Samples~/URPPackageSamples"
+    }
+  ]
+}
