@@ -55,7 +55,7 @@ namespace UnityEngine.Rendering.Universal
 
         internal static RenderTargetHandle GetCameraTarget(ref CameraData cameraData)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (cameraData.xr.enabled)
                 return new RenderTargetHandle(cameraData.xr.renderTarget);
 #endif

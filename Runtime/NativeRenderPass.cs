@@ -149,9 +149,10 @@ namespace UnityEngine.Rendering.Universal
 
             foreach (var passIdx in currentMergeablePasses)
             {
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                 if (!m_UseOptimizedStoreActions)
                     break;
-
+#endif
                 if (passIdx == -1)
                     break;
 
@@ -221,10 +222,10 @@ namespace UnityEngine.Rendering.Universal
                         var colorHandle = pass.overrideCameraTarget ? pass.colorAttachmentHandles[i] : m_CameraColorTarget.handle;
 
                         int existingAttachmentIndex = FindAttachmentDescriptorIndexInList(colorHandle.nameID, m_ActiveColorAttachmentDescriptors);
-
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                         if (m_UseOptimizedStoreActions)
                             currentAttachmentDescriptor.storeAction = m_FinalColorStoreAction[i];
-
+#endif
                         if (existingAttachmentIndex == -1)
                         {
                             // add a new attachment
@@ -261,9 +262,10 @@ namespace UnityEngine.Rendering.Universal
 
                     if (passHasClearDepth)
                         m_ActiveDepthAttachmentDescriptor.ConfigureClear(Color.black, 1.0f, 0);
-
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                     if (m_UseOptimizedStoreActions)
                         m_ActiveDepthAttachmentDescriptor.storeAction = m_FinalDepthStoreAction;
+#endif
                 }
 
                 if (hasInput)
@@ -353,14 +355,14 @@ namespace UnityEngine.Rendering.Universal
                         if (RenderingUtils.MultisampleDepthResolveSupported())
                             m_ActiveDepthAttachmentDescriptor.ConfigureResolveTarget(m_ActiveDepthAttachmentDescriptor.loadStoreTarget);
                     }
-
-
+                    
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                     if (m_UseOptimizedStoreActions)
                     {
                         currentAttachmentDescriptor.storeAction = m_FinalColorStoreAction[0];
                         m_ActiveDepthAttachmentDescriptor.storeAction = m_FinalDepthStoreAction;
                     }
-
+#endif
                     int existingAttachmentIndex = FindAttachmentDescriptorIndexInList(currentAttachmentIdx,
                         currentAttachmentDescriptor, m_ActiveColorAttachmentDescriptors);
 

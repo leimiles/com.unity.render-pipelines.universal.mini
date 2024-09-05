@@ -66,7 +66,7 @@ namespace UnityEngine.Rendering.Universal
 
         internal int GetXRMultiPassId(ref CameraData cameraData)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             return cameraData.xr.enabled ? cameraData.xr.multipassId : 0;
 #else
             return 0;
@@ -82,7 +82,7 @@ namespace UnityEngine.Rendering.Universal
             bool aspectChanged = m_PrevAspectRatio[idx] != cameraData.aspectRatio;
             if (m_LastFrameIndex[idx] != Time.frameCount || aspectChanged)
             {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                 if (cameraData.xr.enabled && cameraData.xr.singlePassEnabled)
                 {
                     var gpuVP0 = GL.GetGPUProjectionMatrix(cameraData.GetProjectionMatrixNoJitter(0), true) * cameraData.GetViewMatrix(0);

@@ -539,7 +539,7 @@ namespace UnityEngine.Rendering.Universal
 
         static bool TryGetCullingParameters(CameraData cameraData, out ScriptableCullingParameters cullingParams)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (cameraData.xr.enabled)
             {
                 cullingParams = cameraData.xr.cullingParams;
@@ -787,7 +787,7 @@ namespace UnityEngine.Rendering.Universal
                 InitializeCameraData(baseCamera, baseCameraAdditionalData, !isStackedRendering, out var baseCameraData);
                 RenderTextureDescriptor originalTargetDesc = baseCameraData.cameraTargetDescriptor;
 
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                 if (xrPass.enabled)
                 {
                     baseCameraData.xr = xrPass;
@@ -1484,7 +1484,7 @@ namespace UnityEngine.Rendering.Universal
             if (cameraData.IsTemporalAAEnabled())
             {
                 bool xrMultipassEnabled = false;
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                 xrMultipassEnabled = cameraData.xr.enabled && !cameraData.xr.singlePassEnabled;
 #endif
                 bool allocation = cameraData.taaPersistentData.AllocateTargets(xrMultipassEnabled);
@@ -1500,7 +1500,7 @@ namespace UnityEngine.Rendering.Universal
 
         static void UpdateCameraStereoMatrices(Camera camera, XRPass xr)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (xr.enabled)
             {
                 if (xr.singlePassEnabled)

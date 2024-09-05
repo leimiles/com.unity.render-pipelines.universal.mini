@@ -222,7 +222,7 @@ namespace UnityEngine.Rendering.Universal
         // Helper function to populate builtin stereo matricies as well as URP stereo matricies
         internal void PushBuiltinShaderConstantsXR(CommandBuffer cmd, bool renderIntoTexture)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (xr.enabled)
             {
                 cmd.SetViewProjectionMatrices(GetViewMatrix(), GetProjectionMatrix());
@@ -245,7 +245,7 @@ namespace UnityEngine.Rendering.Universal
         /// <returns> The camera view matrix. </returns>
         public Matrix4x4 GetViewMatrix(int viewIndex = 0)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (xr.enabled)
                 return xr.GetViewMatrix(viewIndex);
 #endif
@@ -259,7 +259,7 @@ namespace UnityEngine.Rendering.Universal
         /// <returns> The camera projection matrix. </returns>
         public Matrix4x4 GetProjectionMatrix(int viewIndex = 0)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (xr.enabled)
                 return m_JitterMatrix * xr.GetProjMatrix(viewIndex);
 #endif
@@ -268,7 +268,7 @@ namespace UnityEngine.Rendering.Universal
 
         internal Matrix4x4 GetProjectionMatrixNoJitter(int viewIndex = 0)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (xr.enabled)
                 return xr.GetProjMatrix(viewIndex);
 #endif
@@ -397,7 +397,7 @@ namespace UnityEngine.Rendering.Universal
         {
             get
             {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                 if (xr.enabled)
                     return !xr.renderTargetDesc.sRGB && (QualitySettings.activeColorSpace == ColorSpace.Linear);
 #endif
@@ -451,7 +451,7 @@ namespace UnityEngine.Rendering.Universal
 
             var handleID = new RenderTargetIdentifier(handle.nameID, 0, CubemapFace.Unknown, 0);
             bool isBackbuffer = handleID == BuiltinRenderTextureType.CameraTarget;
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (xr.enabled)
                 isBackbuffer |= handleID == new RenderTargetIdentifier(xr.renderTarget, 0, CubemapFace.Unknown, 0);
 #endif
@@ -490,7 +490,7 @@ namespace UnityEngine.Rendering.Universal
                     {
                         var handleID = new RenderTargetIdentifier(renderer.cameraColorTarget, 0, CubemapFace.Unknown, 0);
                         bool isBackbuffer = handleID == BuiltinRenderTextureType.CameraTarget;
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                         if (xr.enabled)
                             isBackbuffer |= handleID == new RenderTargetIdentifier(xr.renderTarget, 0, CubemapFace.Unknown, 0);
 #endif
@@ -1714,7 +1714,7 @@ namespace UnityEngine.Rendering.Universal
         internal static void Initialize()
         {
             bool isRunningXRMobile = false;
-#if ENABLE_VR && ENABLE_VR_MODULE
+#if ENABLE_VR && ENABLE_VR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
 #if PLATFORM_WINRT || PLATFORM_ANDROID
             isRunningXRMobile = IsRunningXRMobile();
 #endif
@@ -1722,7 +1722,7 @@ namespace UnityEngine.Rendering.Universal
             isXRMobile = isRunningXRMobile;
         }
 
-#if ENABLE_VR && ENABLE_VR_MODULE
+#if ENABLE_VR && ENABLE_VR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
 #if PLATFORM_WINRT || PLATFORM_ANDROID
         // XR mobile platforms are not treated as dedicated mobile platforms in Core. Handle them specially here. (Quest and HL).
         private static List<XR.XRDisplaySubsystem> displaySubsystemList = new List<XR.XRDisplaySubsystem>();

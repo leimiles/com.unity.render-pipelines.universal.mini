@@ -142,7 +142,7 @@ namespace UnityEngine.Rendering.Universal
 
         internal static void SetCameraMatrices(CommandBuffer cmd, ref CameraData cameraData, bool setInverseMatrices, bool isTargetFlipped)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (cameraData.xr.enabled)
             {
                 cameraData.PushBuiltinShaderConstantsXR(cmd, false);
@@ -206,7 +206,7 @@ namespace UnityEngine.Rendering.Universal
             float scaledCameraHeight = (float)cameraData.cameraTargetDescriptor.height;
             float cameraWidth = (float)camera.pixelWidth;
             float cameraHeight = (float)camera.pixelHeight;
-
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             // Use eye texture's width and height as screen params when XR is enabled
             if (cameraData.xr.enabled)
             {
@@ -215,6 +215,7 @@ namespace UnityEngine.Rendering.Universal
 
                 useRenderPassEnabled = false;
             }
+#endif
 
             if (camera.allowDynamicResolution)
             {
@@ -629,7 +630,7 @@ namespace UnityEngine.Rendering.Universal
         /// <seealso cref="ScriptableRendererData"/>
         public ScriptableRenderer(ScriptableRendererData data)
         {
-#if DEVELOPMENT_BUILD || UNITY_EDITOR
+#if DEVELOPMENT_BUILD || UNITY_EDITOR && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             DebugHandler = new DebugHandler(data);
 #endif
             profilingExecute = new ProfilingSampler($"{nameof(ScriptableRenderer)}.{nameof(ScriptableRenderer.Execute)}: {data.name}");
@@ -683,7 +684,9 @@ namespace UnityEngine.Rendering.Universal
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
+#if  (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)            
             DebugHandler?.Dispose();
+#endif
         }
 
         internal virtual void ReleaseRenderTargets()
@@ -942,7 +945,7 @@ namespace UnityEngine.Rendering.Universal
 
         private void BeginRenderGraphXRRendering(RenderGraph renderGraph, ref RenderingData renderingData)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             using (var builder = renderGraph.AddRenderPass<BeginXRPassData>("BeginXRRendering", out var passData,
                 Profiling.beginXRRendering))
             {
@@ -978,7 +981,7 @@ namespace UnityEngine.Rendering.Universal
 
         private void EndRenderGraphXRRendering(RenderGraph renderGraph, ref RenderingData renderingData)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             using (var builder = renderGraph.AddRenderPass<EndXRPassData>("EndXRRendering", out var passData,
                 Profiling.endXRRendering))
             {
@@ -1229,7 +1232,7 @@ namespace UnityEngine.Rendering.Universal
                     ExecuteBlock(RenderPassBlock.MainRenderingTransparent, in renderBlocks, context, ref renderingData);
                 }
 
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                 // Late latching is not supported after this point in the frame
                 if (cameraData.xr.enabled)
                     cameraData.xrUniversal.canMarkLateLatch = false;
@@ -1310,11 +1313,12 @@ namespace UnityEngine.Rendering.Universal
             // For overlay cameras we check if depth should be cleared on not.
             if (cameraData.renderType == CameraRenderType.Overlay)
                 return (cameraData.clearDepth) ? ClearFlag.DepthStencil : ClearFlag.None;
-
+#if  (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             // Certain debug modes (e.g. wireframe/overdraw modes) require that we override clear flags and clear everything.
             var debugHandler = cameraData.renderer.DebugHandler;
             if (debugHandler != null && debugHandler.IsActiveForCamera(ref cameraData) && debugHandler.IsScreenClearNeeded)
                 return ClearFlag.All;
+#endif
 
             // XRTODO: remove once we have visible area of occlusion mesh available
             if (cameraClearFlags == CameraClearFlags.Skybox && RenderSettings.skybox != null && cameraData.postProcessEnabled && cameraData.xr.enabled)
@@ -1469,7 +1473,7 @@ namespace UnityEngine.Rendering.Universal
             // Track CPU only as GPU markers for this scope were "too noisy".
             using (new ProfilingScope(null, Profiling.RenderPass.setRenderPassAttachments))
                 SetRenderPassAttachments(cmd, renderPass, ref cameraData);
-
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             // Selectively enable foveated rendering
             if (cameraData.xr.supportsFoveatedRendering)
             {
@@ -1478,6 +1482,7 @@ namespace UnityEngine.Rendering.Universal
                     cmd.SetFoveatedRenderingMode(FoveatedRenderingMode.Enabled);
                 }
             }
+#endif
 
             // Also, we execute the commands recorded at this point to ensure SetRenderTarget is called before RenderPass.Execute
             context.ExecuteCommandBuffer(cmd);
@@ -1491,7 +1496,7 @@ namespace UnityEngine.Rendering.Universal
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
             }
-
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (cameraData.xr.enabled)
             {
                 if (cameraData.xr.supportsFoveatedRendering)
@@ -1503,6 +1508,7 @@ namespace UnityEngine.Rendering.Universal
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
             }
+#endif
         }
 
         void SetRenderPassAttachments(CommandBuffer cmd, ScriptableRenderPass renderPass, ref CameraData cameraData)
@@ -1551,7 +1557,7 @@ namespace UnityEngine.Rendering.Universal
                 // { ...
                 // }
                 var depthTargetID = m_CameraDepthTarget.nameID;
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                 if (cameraData.xr.enabled)
                     depthTargetID = new RenderTargetIdentifier(depthTargetID, 0, CubemapFace.Unknown, -1);
 #endif
@@ -1639,7 +1645,7 @@ namespace UnityEngine.Rendering.Universal
                             }
                         }
 
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                         if (cameraData.xr.enabled)
                         {
                             // SetRenderTarget might alter the internal device state(winding order).
@@ -1729,11 +1735,13 @@ namespace UnityEngine.Rendering.Universal
                 }
 #endif
 
+#if  (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                 // If the debug-handler needs to clear the screen, update "finalClearColor" accordingly...
                 if ((DebugHandler != null) && DebugHandler.IsActiveForCamera(ref cameraData))
                 {
                     DebugHandler.TryGetScreenClearColor(ref finalClearColor);
                 }
+#endif
                 // Disabling Native RenderPass if not using RTHandles as we will be relying on info inside handles object
                 if (IsRenderPassEnabled(renderPass) && cameraData.isRenderPassSupportedCamera && renderPass.m_UsesRTHandles)
                 {
@@ -1761,7 +1769,7 @@ namespace UnityEngine.Rendering.Universal
                         else
                             SetRenderTarget(cmd, passColorAttachment.fallback, passDepthAttachment.fallback, finalClearFlag, finalClearColor, renderPass.colorStoreActions[0], renderPass.depthStoreAction);
 
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                         if (cameraData.xr.enabled)
                         {
                             // SetRenderTarget might alter the internal device state(winding order).
@@ -1784,7 +1792,7 @@ namespace UnityEngine.Rendering.Universal
 
         void BeginXRRendering(CommandBuffer cmd, ScriptableRenderContext context, ref CameraData cameraData)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (cameraData.xr.enabled)
             {
                 if (cameraData.xrUniversal.isLateLatchEnabled)
@@ -1808,7 +1816,7 @@ namespace UnityEngine.Rendering.Universal
 
         void EndXRRendering(CommandBuffer cmd, ScriptableRenderContext context, ref CameraData cameraData)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (cameraData.xr.enabled)
             {
                 cameraData.xr.StopSinglePass(cmd);
@@ -1897,7 +1905,7 @@ namespace UnityEngine.Rendering.Universal
 
             RenderBufferLoadAction depthLoadAction = ((uint)clearFlag & (uint)ClearFlag.Depth) != 0 ?
                 RenderBufferLoadAction.DontCare : RenderBufferLoadAction.Load;
-
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             // if we shouldn't use optimized store actions then fall back to the conservative safe (un-optimal!) route and just store everything
             if (!m_UseOptimizedStoreActions)
             {
@@ -1906,7 +1914,7 @@ namespace UnityEngine.Rendering.Universal
                 if (depthStoreAction != RenderBufferStoreAction.StoreAndResolve)
                     depthStoreAction = RenderBufferStoreAction.Store;
             }
-
+#endif
 
             SetRenderTarget(cmd, colorAttachment, colorLoadAction, colorStoreAction,
                 depthAttachment, depthLoadAction, depthStoreAction, clearFlag, clearColor);
@@ -1930,7 +1938,7 @@ namespace UnityEngine.Rendering.Universal
 
             RenderBufferLoadAction depthLoadAction = ((uint)clearFlag & (uint)ClearFlag.Depth) != 0 ?
                 RenderBufferLoadAction.DontCare : RenderBufferLoadAction.Load;
-
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             // if we shouldn't use optimized store actions then fall back to the conservative safe (un-optimal!) route and just store everything
             if (!m_UseOptimizedStoreActions)
             {
@@ -1939,7 +1947,7 @@ namespace UnityEngine.Rendering.Universal
                 if (depthStoreAction != RenderBufferStoreAction.StoreAndResolve)
                     depthStoreAction = RenderBufferStoreAction.Store;
             }
-
+#endif
 
             SetRenderTarget(cmd, colorAttachment, colorLoadAction, colorStoreAction,
                 depthAttachment, depthLoadAction, depthStoreAction, clearFlag, clearColor);
