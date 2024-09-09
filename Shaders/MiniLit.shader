@@ -3,7 +3,7 @@ Shader "SoFunny/Mini/MiniLit"
     Properties
     {
         // override properties, this shader don't support alphaclip
-        _BaseColor ("Base Color", Color) = (1, 1, 0, 1)
+        _BaseColor ("Base Color", Color) = (1, 1, 1, 1)
         [NoScaleOffset]_BaseMap ("Base Map", 2D) = "white" { }
         [NoScaleOffset]_NormalMap ("Normal Map", 2D) = "bump" { }
         [NoScaleOffset]_MAREMap ("Non-Metallic AO Roughness EmissiveMask Map", 2D) = "white" { }
