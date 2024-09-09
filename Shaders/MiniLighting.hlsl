@@ -34,10 +34,12 @@ void MiniLightingGeneral(half3 normal, half3 lightDir, half3 viewDir, half3 ligh
     half G_L = ndotl / (ndotl * (1.0h - k) + k);
     half G = (G_V * G_L);
 
-    half specular = (D * fresnel * G) / (4.0h * ndotv);
+    //half specular = (D * fresnel * G) / (4.0h * ndotv);
+    half specular = (D * fresnel * G) / (32.0h * ndotv);        // correction in gamma space
 
     specular = saturate(specular);
     outSpecular = half3(specular, specular, specular) * lightColor;
+
 }
 
 
