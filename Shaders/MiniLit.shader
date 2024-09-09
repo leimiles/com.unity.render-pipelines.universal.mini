@@ -7,6 +7,7 @@ Shader "SoFunny/Mini/MiniLit"
         [NoScaleOffset]_BaseMap ("Base Map", 2D) = "white" { }
         [NoScaleOffset]_NormalMap ("Normal Map", 2D) = "bump" { }
         [NoScaleOffset]_MAREMap ("Non-Metallic AO Roughness EmissiveMask Map", 2D) = "white" { }
+        [HDR]_EmissionColor ("Emission Color", Color) = (0, 0, 0, 0)
         _ST ("Scale And Offset", Vector) = (1, 1, 0, 0)
     }
 
@@ -42,7 +43,7 @@ Shader "SoFunny/Mini/MiniLit"
             struct Varyings
             {
                 float4 positionCS : SV_POSITION;
-                half2 uv : TEXCOORD0;
+                half4 uv0uv1 : TEXCOORD0;
                 half4 normalWS : TEXCOORD2;     // w = viewDir.x
                 half4 tangentWS : TEXCOORD3;    // w = viewDir.y
                 half4 bitangentWS : TEXCOORD4;  // w = viewDir.z
@@ -104,7 +105,7 @@ Shader "SoFunny/Mini/MiniLit"
                 VertexNormalInputs vni = GetVertexNormalInputs(v.normalOS, v.tangentOS);
                 //o.uv = TRANSFORM_TEX(v.texcoord, _BaseMap);
                 o.positionWS = vpi.positionWS;
-                o.uv.xy = v.texcoord.xy * _ST.xy + _ST.zw;
+                o.uv0uv1.xy = v.texcoord.xy * _ST.xy + _ST.zw;
                 half3 viewDirWS = _WorldSpaceCameraPos - vpi.positionWS;        // always perspective solution
                 o.normalWS = half4(vni.normalWS, viewDirWS.x);
                 o.tangentWS = half4(vni.tangentWS, viewDirWS.y);
@@ -121,7 +122,7 @@ Shader "SoFunny/Mini/MiniLit"
                 UNITY_SETUP_INSTANCE_ID(i);
 
                 MiniSurfaceData miniSurfaceData;
-                InitializeMiniSurfaceData(i.uv, miniSurfaceData);
+                InitializeMiniSurfaceData(i.uv0uv1.xy, miniSurfaceData);
 
                 InputData inputData;
                 InitializeInputData(i, miniSurfaceData.normalTS, inputData);
@@ -133,20 +134,21 @@ Shader "SoFunny/Mini/MiniLit"
                 Light light = GetMainLight(inputData.shadowCoord);
                 light.color *= light.shadowAttenuation;
 
+
                 half3 diffuse;
                 half3 specular;
                 MiniLightingGeneral(
                     inputData.normalWS,
                     light.direction,
                     inputData.viewDirectionWS,
-                    light.color,
+                    light.color * miniSurfaceData.metalic_occlusion_roughness_emissionMask.g + miniSurfaceData.metalic_occlusion_roughness_emissionMask.a * _EmissionColor,
                     1.0h - miniSurfaceData.metalic_occlusion_roughness_emissionMask.r, // because of white texture input by default
                     miniSurfaceData.metalic_occlusion_roughness_emissionMask.b,
                     ndotv,
                     diffuse,
                     specular);
                 half3 finalColor = (diffuse.rgb + inputData.bakedGI) * miniSurfaceData.albedo + specular.rgb;
-
+                //return half4(miniSurfaceData.metalic_occlusion_roughness_emissionMask.g, miniSurfaceData.metalic_occlusion_roughness_emissionMask.g, miniSurfaceData.metalic_occlusion_roughness_emissionMask.g, 1);
                 return half4(finalColor, 1.0h);
             }
 
@@ -219,7 +221,6 @@ Shader "SoFunny/Mini/MiniLit"
                 #endif
 
                 return positionCS;
-
             }
 
             Varyings vert(Attributes input)
