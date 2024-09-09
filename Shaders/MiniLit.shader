@@ -131,7 +131,7 @@ Shader "SoFunny/Mini/MiniLit"
                 //half ndotv = max(dot(inputData.normalWS, inputData.viewDirectionWS), 0.0);    // I need to fix this
                 half ndotv = 0.5;
 
-                Light light = GetMainLight(inputData.shadowCoord);
+                Light light = GetMainLight(inputData.shadowCoord, inputData.positionWS, half4(1, 1, 1, 1));
                 light.color *= light.shadowAttenuation;
 
 
