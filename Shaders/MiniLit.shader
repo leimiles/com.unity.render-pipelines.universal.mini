@@ -7,6 +7,7 @@ Shader "SoFunny/Mini/MiniLit"
         [NoScaleOffset]_BaseMap ("Base Map", 2D) = "white" { }
         [NoScaleOffset]_NormalMap ("Normal Map", 2D) = "bump" { }
         [NoScaleOffset]_MAREMap ("Non-Metallic AO Roughness EmissiveMask Map", 2D) = "white" { }
+        [NoScaleOffset] _MAREConfig ("MARE Configure", Vector) = (1, 1, 1, 1)
         [HDR]_EmissionColor ("Emission Color", Color) = (0, 0, 0, 0)
         _ST ("Scale And Offset", Vector) = (1, 1, 0, 0)
     }
@@ -72,6 +73,7 @@ Shader "SoFunny/Mini/MiniLit"
                 outMiniSurfaceData.albedo = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uv).rgb * _BaseColor.rgb;
                 outMiniSurfaceData.normalTS = UnpackNormal(SAMPLE_TEXTURE2D(_NormalMap, sampler_NormalMap, uv));
                 outMiniSurfaceData.metalic_occlusion_roughness_emissionMask = SAMPLE_TEXTURE2D(_MAREMap, sampler_MAREMap, uv);
+                outMiniSurfaceData.metalic_occlusion_roughness_emissionMask = outMiniSurfaceData.metalic_occlusion_roughness_emissionMask * _MAREConfig;
             }
 
             void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData)
@@ -91,6 +93,7 @@ Shader "SoFunny/Mini/MiniLit"
                 //inputData.fogCoord = 0; //    no need for now
                 //inputData.vertexLighting = 0    // no need for now
                 inputData.bakedGI = SampleSHPixel(input.sh_tangentSign.xyz, inputData.normalWS);
+                inputData.bakedGI = LinearToSRGB(inputData.bakedGI);
                 //inputData.normalizedScreenSpaceUV = 0;  // no need for now
                 //inputData.shadowMask = 0;    // no need for now
 
@@ -129,11 +132,11 @@ Shader "SoFunny/Mini/MiniLit"
 
 
                 //half ndotv = max(dot(inputData.normalWS, inputData.viewDirectionWS), 0.0);    // I need to fix this
-                half ndotv = 0.5;
+                half ndotv = 0.5h;
 
                 Light light = GetMainLight(inputData.shadowCoord, inputData.positionWS, half4(1, 1, 1, 1));
                 light.color *= light.shadowAttenuation;
-
+                inputData.bakedGI += miniSurfaceData.metalic_occlusion_roughness_emissionMask.a * _EmissionColor;
 
                 half3 diffuse;
                 half3 specular;
@@ -141,14 +144,13 @@ Shader "SoFunny/Mini/MiniLit"
                     inputData.normalWS,
                     light.direction,
                     inputData.viewDirectionWS,
-                    light.color * miniSurfaceData.metalic_occlusion_roughness_emissionMask.g + miniSurfaceData.metalic_occlusion_roughness_emissionMask.a * _EmissionColor,
+                    light.color * miniSurfaceData.metalic_occlusion_roughness_emissionMask.g,
                     1.0h - miniSurfaceData.metalic_occlusion_roughness_emissionMask.r, // because of white texture input by default
                     miniSurfaceData.metalic_occlusion_roughness_emissionMask.b,
                     ndotv,
                     diffuse,
                     specular);
-                half3 finalColor = (diffuse.rgb + inputData.bakedGI) * miniSurfaceData.albedo + specular.rgb;
-                //return half4(miniSurfaceData.metalic_occlusion_roughness_emissionMask.g, miniSurfaceData.metalic_occlusion_roughness_emissionMask.g, miniSurfaceData.metalic_occlusion_roughness_emissionMask.g, 1);
+                half3 finalColor = (diffuse.rgb + inputData.bakedGI) * miniSurfaceData.albedo + specular.rgb ;
                 return half4(finalColor, 1.0h);
             }
 
