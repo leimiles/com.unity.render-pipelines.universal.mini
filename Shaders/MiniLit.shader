@@ -150,7 +150,7 @@ Shader "SoFunny/Mini/MiniLit"
 
                 #if defined(LIGHTMAP_ON)
                     diffuse = 0;
-                    inputData.bakedGI = lerp(inputData.bakedGI, 0.75, 1 - light.shadowAttenuation);     // 0.75 is the shadow strength
+                    //inputData.bakedGI = lerp(inputData.bakedGI, 0.75, 1 - light.shadowAttenuation);     // 0.75 is the shadow strength
                 #endif
 
                 half3 finalColor = (diffuse.rgb + inputData.bakedGI) * miniSurfaceData.albedo + specular.rgb ;
