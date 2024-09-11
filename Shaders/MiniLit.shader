@@ -66,7 +66,7 @@ Shader "SoFunny/Mini/MiniLit"
                 outMiniSurfaceData.albedo = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uv).rgb * _BaseColor.rgb;
                 outMiniSurfaceData.normalTS = UnpackNormal(SAMPLE_TEXTURE2D(_NormalMap, sampler_NormalMap, uv));
                 outMiniSurfaceData.metalic_occlusion_roughness_emissionMask = SAMPLE_TEXTURE2D(_MAREMap, sampler_MAREMap, uv);
-                outMiniSurfaceData.metalic_occlusion_roughness_emissionMask = outMiniSurfaceData.metalic_occlusion_roughness_emissionMask * _MAREConfig;
+                outMiniSurfaceData.metalic_occlusion_roughness_emissionMask = LinearToSRGB(outMiniSurfaceData.metalic_occlusion_roughness_emissionMask) * _MAREConfig;
             }
 
             void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData)
@@ -135,13 +135,15 @@ Shader "SoFunny/Mini/MiniLit"
                 Light light = GetMainLight(inputData.shadowCoord, inputData.positionWS, half4(1, 1, 1, 1));
                 light.color *= light.shadowAttenuation;
 
+                inputData.bakedGI *= miniSurfaceData.metalic_occlusion_roughness_emissionMask.g;
+
                 half3 diffuse;
                 half3 specular;
                 MiniLightingGeneral(
                     inputData.normalWS,
                     light.direction,
                     inputData.viewDirectionWS,
-                    light.color * miniSurfaceData.metalic_occlusion_roughness_emissionMask.g,
+                    light.color,
                     1.0h - miniSurfaceData.metalic_occlusion_roughness_emissionMask.r, // because of white texture input by default
                     miniSurfaceData.metalic_occlusion_roughness_emissionMask.b,
                     ndotv,
