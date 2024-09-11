@@ -6,6 +6,8 @@
 #define MEDIUMP_FLT_MAX 65504.0h
 #define saturateMediump(x) min(x, MEDIUMP_FLT_MAX)
 
+
+
 void MiniLightingGeneral(half3 normal, half3 lightDir, half3 viewDir, half3 lightColor, half fZero, half roughness, half ndotv, out half3 outDiffuse, out half3 outSpecular)
 {
 
@@ -14,8 +16,11 @@ void MiniLightingGeneral(half3 normal, half3 lightDir, half3 viewDir, half3 ligh
     half ndotl = max(dot(normal, lightDir), 0.0h);
     half ndoth = max(dot(normal, halfVec), 0.0h);
     half hdotv = max(dot(viewDir, halfVec), 0.0h);
-
-    outDiffuse = half3(ndotl, ndotl, ndotl) * lightColor;
+    //#if defined(LIGHTMAP_ON)
+    //    outDiffuse = 0;     // when lightmap on, we only need bake lighting
+    //#else
+        outDiffuse = half3(ndotl, ndotl, ndotl) * lightColor;
+    //#endif
 
 
     half alpha = roughness * roughness;
@@ -39,7 +44,6 @@ void MiniLightingGeneral(half3 normal, half3 lightDir, half3 viewDir, half3 ligh
 
     specular = saturate(specular);
     outSpecular = half3(specular, specular, specular) * lightColor;
-
 }
 
 

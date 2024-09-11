@@ -25,7 +25,9 @@ Shader "SoFunny/Mini/MiniLit"
             #include "MiniInput.hlsl"
             #include "MiniLighting.hlsl"
 
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE  // this is the only shadow we need
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma multi_compile _ LIGHTMAP_ON
+
             #pragma multi_compile_fragment _SHADOWS_SOFT
             #pragma multi_compile _ ENABLE_VS_SKINNING
 
@@ -37,7 +39,8 @@ Shader "SoFunny/Mini/MiniLit"
                 float4 positionOS : POSITION;
                 half3 normalOS : NORMAL;
                 half4 tangentOS : TANGENT;
-                half2 texcoord : TEXCOORD0;
+                half2 texcoord0 : TEXCOORD0;
+                half2 texcoord1 : TEXCOORD1;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -53,19 +56,9 @@ Shader "SoFunny/Mini/MiniLit"
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
-
-
             TEXTURE2D(_BaseMap);        SAMPLER(sampler_BaseMap);
             TEXTURE2D(_NormalMap);        SAMPLER(sampler_NormalMap);
             TEXTURE2D(_MAREMap);        SAMPLER(sampler_MAREMap);
-
-            // only what we need for mini surface
-            struct MiniSurfaceData
-            {
-                half3 albedo;
-                half3 normalTS;
-                half4 metalic_occlusion_roughness_emissionMask;
-            };
 
             inline void InitializeMiniSurfaceData(half2 uv, out MiniSurfaceData outMiniSurfaceData)
             {
@@ -92,8 +85,12 @@ Shader "SoFunny/Mini/MiniLit"
 
                 //inputData.fogCoord = 0; //    no need for now
                 //inputData.vertexLighting = 0    // no need for now
-                inputData.bakedGI = SampleSHPixel(input.sh_tangentSign.xyz, inputData.normalWS);
-                inputData.bakedGI = LinearToSRGB(inputData.bakedGI);
+                #if defined(LIGHTMAP_ON)
+                    inputData.bakedGI = SampleLightmap(input.uv0uv1.zw, 0, inputData.normalWS);
+                #else
+                    inputData.bakedGI = SampleSHPixel(input.sh_tangentSign.xyz, inputData.normalWS);
+                #endif
+                inputData.bakedGI = LinearToSRGB(inputData.bakedGI);        // only for minirp
                 //inputData.normalizedScreenSpaceUV = 0;  // no need for now
                 //inputData.shadowMask = 0;    // no need for now
 
@@ -106,9 +103,8 @@ Shader "SoFunny/Mini/MiniLit"
                 UNITY_TRANSFER_INSTANCE_ID(v, o);
                 VertexPositionInputs vpi = GetVertexPositionInputs(v.positionOS.xyz);
                 VertexNormalInputs vni = GetVertexNormalInputs(v.normalOS, v.tangentOS);
-                //o.uv = TRANSFORM_TEX(v.texcoord, _BaseMap);
                 o.positionWS = vpi.positionWS;
-                o.uv0uv1.xy = v.texcoord.xy * _ST.xy + _ST.zw;
+                o.uv0uv1.xy = v.texcoord0.xy * _ST.xy + _ST.zw;
                 half3 viewDirWS = _WorldSpaceCameraPos - vpi.positionWS;        // always perspective solution
                 o.normalWS = half4(vni.normalWS, viewDirWS.x);
                 o.tangentWS = half4(vni.tangentWS, viewDirWS.y);
@@ -117,6 +113,9 @@ Shader "SoFunny/Mini/MiniLit"
                 half sign = v.tangentOS.w * unity_WorldTransformParams.w;       // dont' use it on ray-tracing
                 o.sh_tangentSign.w = sign;
                 o.positionCS = vpi.positionCS;
+                #if defined(LIGHTMAP_ON)
+                    o.uv0uv1.zw = v.texcoord1 * unity_LightmapST.xy + unity_LightmapST.zw;
+                #endif
                 return o;
             }
 
@@ -130,13 +129,15 @@ Shader "SoFunny/Mini/MiniLit"
                 InputData inputData;
                 InitializeInputData(i, miniSurfaceData.normalTS, inputData);
 
-
                 //half ndotv = max(dot(inputData.normalWS, inputData.viewDirectionWS), 0.0);    // I need to fix this
                 half ndotv = 0.5h;
 
                 Light light = GetMainLight(inputData.shadowCoord, inputData.positionWS, half4(1, 1, 1, 1));
+
                 light.color *= light.shadowAttenuation;
-                inputData.bakedGI += miniSurfaceData.metalic_occlusion_roughness_emissionMask.a * _EmissionColor;
+
+
+                //return half4(light.shadowAttenuation, light.shadowAttenuation, light.shadowAttenuation, 1);
 
                 half3 diffuse;
                 half3 specular;
@@ -150,7 +151,18 @@ Shader "SoFunny/Mini/MiniLit"
                     ndotv,
                     diffuse,
                     specular);
+
+                #if defined(LIGHTMAP_ON)
+                    diffuse = 0;
+                    inputData.bakedGI = lerp(inputData.bakedGI, 0.75, 1 - light.shadowAttenuation);     // 0.75 is the shadow strength
+                #endif
+
+
+                //return half4(1.0 - light.shadowAttenuation, 1.0 - light.shadowAttenuation, 1.0 - light.shadowAttenuation, 1);
+
                 half3 finalColor = (diffuse.rgb + inputData.bakedGI) * miniSurfaceData.albedo + specular.rgb ;
+                finalColor += miniSurfaceData.metalic_occlusion_roughness_emissionMask.a * _EmissionColor;
+
                 return half4(finalColor, 1.0h);
             }
 
@@ -251,13 +263,11 @@ Shader "SoFunny/Mini/MiniLit"
             Cull Back
 
             HLSLPROGRAM
-
+            #pragma target 2.0
             #pragma vertex vert
             #pragma fragment frag
 
             #pragma multi_compile_instancing
-
-            //#include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
 
             #pragma multi_compile _ ENABLE_VS_SKINNING
             #include "MiniInput.hlsl"
@@ -271,6 +281,7 @@ Shader "SoFunny/Mini/MiniLit"
             struct Varyings
             {
                 float4 positionCS : SV_POSITION;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
 
@@ -278,21 +289,13 @@ Shader "SoFunny/Mini/MiniLit"
             {
                 Varyings output = (Varyings)0;
                 UNITY_SETUP_INSTANCE_ID(input);
-                VertexPositionInputs vpi = GetVertexPositionInputs(input.positionOS.xyz);
-                output.positionCS = vpi.positionCS;
-
-                #if UNITY_REVERSED_Z
-                    output.positionCS.z = min(output.positionCS.z, UNITY_NEAR_CLIP_VALUE);
-                #else
-                    output.positionCS.z = max(output.positionCS.z, UNITY_NEAR_CLIP_VALUE);
-                #endif
-
+                output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
                 return output;
             }
 
-            half4 frag(Varyings input) : SV_TARGET
+            half frag(Varyings input) : SV_TARGET
             {
-                return 0;
+                return input.positionCS.z;
             }
 
             ENDHLSL

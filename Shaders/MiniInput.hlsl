@@ -2,6 +2,7 @@
 #define MINI_INPUT_INCLUDED
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
+
 CBUFFER_START(UnityPerMaterial)
     float4 _BaseMap_ST;
     half4 _BaseColor;
@@ -9,6 +10,13 @@ CBUFFER_START(UnityPerMaterial)
     half4 _EmissionColor;
     half4 _MAREConfig;
 CBUFFER_END
+
+struct MiniSurfaceData
+{
+    half3 albedo;
+    half3 normalTS;
+    half4 metalic_occlusion_roughness_emissionMask;
+};
 
 // this code is used when material property override enabled, must use float4
 #ifdef UNITY_DOTS_INSTANCING_ENABLED
