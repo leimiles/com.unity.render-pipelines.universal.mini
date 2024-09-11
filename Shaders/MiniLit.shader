@@ -154,7 +154,7 @@ Shader "SoFunny/Mini/MiniLit"
                 #endif
 
                 half3 finalColor = (diffuse.rgb + inputData.bakedGI) * miniSurfaceData.albedo + specular.rgb ;
-                finalColor += miniSurfaceData.metalic_occlusion_roughness_emissionMask.a * _EmissionColor;
+                finalColor += miniSurfaceData.metalic_occlusion_roughness_emissionMask.a * _EmissionColor.rgb;
 
                 return half4(finalColor, 1.0h);
             }
@@ -293,5 +293,48 @@ Shader "SoFunny/Mini/MiniLit"
 
             ENDHLSL
         }
+
+        Pass
+        {
+            Name "Meta"
+            Tags { "LightMode" = "Meta" }
+
+            // -------------------------------------
+            // Render State Commands
+            Cull Off
+
+            HLSLPROGRAM
+            #pragma target 2.0
+            #pragma vertex vert
+            #pragma fragment frag
+            #include "MiniInput.hlsl"
+
+            TEXTURE2D(_BaseMap);        SAMPLER(sampler_BaseMap);
+            TEXTURE2D(_MAREMap);        SAMPLER(sampler_MAREMap);
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/UniversalMetaPass.hlsl"
+
+
+            Varyings vert(Attributes v)
+            {
+                Varyings o = (Varyings)0;
+                o.positionCS = UnityMetaVertexPosition(v.positionOS.xyz, v.uv1, v.uv2);
+                o.uv = TRANSFORM_TEX(v.uv0, _BaseMap);
+                return o;
+            }
+            half4 frag(Varyings i) : SV_TARGET
+            {
+                float2 uv = i.uv;
+                MetaInput metaInput;
+                metaInput.Albedo = _BaseColor.rgb * SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uv).rgb;
+                metaInput.Emission = _EmissionColor.rgb * SAMPLE_TEXTURE2D(_MAREMap, sampler_MAREMap, uv).a;
+
+                return UniversalFragmentMeta(i, metaInput);
+            }
+            ENDHLSL
+        }
     }
+
+    Fallback  "Hidden/Universal Render Pipeline/FallbackError"
+    CustomEditor "MiniLitShaderGUI"
 }
