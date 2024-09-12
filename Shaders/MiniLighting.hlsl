@@ -16,12 +16,11 @@ void MiniLightingGeneral(half3 normal, half3 lightDir, half3 viewDir, half3 ligh
     half ndotl = max(dot(normal, lightDir), 0.0h);
     half ndoth = max(dot(normal, halfVec), 0.0h);
     half hdotv = max(dot(viewDir, halfVec), 0.0h);
-    //#if defined(LIGHTMAP_ON)
-    //    outDiffuse = 0;     // when lightmap on, we only need bake lighting
-    //#else
+    #if defined(LIGHTMAP_ON)
+        outDiffuse = 0;
+    #else
         outDiffuse = half3(ndotl, ndotl, ndotl) * lightColor;
-    //#endif
-
+    #endif
 
     half alpha = roughness * roughness;
 

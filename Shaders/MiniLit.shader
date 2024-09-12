@@ -134,9 +134,11 @@ Shader "SoFunny/Mini/MiniLit"
                 half ndotv = 0.5h;
 
                 Light light = GetMainLight(inputData.shadowCoord, inputData.positionWS, half4(1, 1, 1, 1));
-                light.color *= light.shadowAttenuation;
 
                 inputData.bakedGI *= miniSurfaceData.metalic_occlusion_roughness_emissionMask.g;
+                #if defined(LIGHTMAP_ON)
+                    inputData.bakedGI = SubtractDirectMainLightFromLightmap(light, inputData.normalWS, inputData.bakedGI);
+                #endif
 
                 half3 diffuse;
                 half3 specular;
@@ -151,12 +153,7 @@ Shader "SoFunny/Mini/MiniLit"
                     diffuse,
                     specular);
 
-                #if defined(LIGHTMAP_ON)
-                    diffuse = 0;
-                    //inputData.bakedGI = lerp(inputData.bakedGI, 0.75, 1 - light.shadowAttenuation);     // 0.75 is the shadow strength
-                #endif
-
-                half3 finalColor = (diffuse.rgb + inputData.bakedGI) * miniSurfaceData.albedo + specular.rgb ;
+                half3 finalColor = (diffuse.rgb * light.shadowAttenuation + inputData.bakedGI) * miniSurfaceData.albedo + specular.rgb ;
                 finalColor += miniSurfaceData.metalic_occlusion_roughness_emissionMask.a * _EmissionColor.rgb;
 
                 #if defined(Debug_Albedo)
