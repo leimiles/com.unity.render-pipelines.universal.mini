@@ -27,6 +27,7 @@ Shader "SoFunny/Mini/MiniLit"
 
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
             #pragma multi_compile _ LIGHTMAP_ON
+            #pragma multi_compile _ Debug_Albedo Debug_Normal Debug_Metallic Debug_AO Debug_Roughness Debug_Emission Debug_Light Debug_BakedGI
 
             #pragma multi_compile_fragment _SHADOWS_SOFT
             #pragma multi_compile _ ENABLE_VS_SKINNING
@@ -66,7 +67,7 @@ Shader "SoFunny/Mini/MiniLit"
                 outMiniSurfaceData.albedo = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uv).rgb * _BaseColor.rgb;
                 outMiniSurfaceData.normalTS = UnpackNormal(SAMPLE_TEXTURE2D(_NormalMap, sampler_NormalMap, uv));
                 outMiniSurfaceData.metalic_occlusion_roughness_emissionMask = SAMPLE_TEXTURE2D(_MAREMap, sampler_MAREMap, uv);
-                outMiniSurfaceData.metalic_occlusion_roughness_emissionMask = LinearToSRGB(outMiniSurfaceData.metalic_occlusion_roughness_emissionMask) * _MAREConfig;
+                outMiniSurfaceData.metalic_occlusion_roughness_emissionMask = LinearToSRGB(outMiniSurfaceData.metalic_occlusion_roughness_emissionMask * _MAREConfig);
             }
 
             void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData)
@@ -157,6 +158,24 @@ Shader "SoFunny/Mini/MiniLit"
 
                 half3 finalColor = (diffuse.rgb + inputData.bakedGI) * miniSurfaceData.albedo + specular.rgb ;
                 finalColor += miniSurfaceData.metalic_occlusion_roughness_emissionMask.a * _EmissionColor.rgb;
+
+                #if defined(Debug_Albedo)
+                    return half4(miniSurfaceData.albedo, 1);
+                #elif defined(Debug_Normal)
+                    return half4(inputData.normalWS * 0.5h + 0.5h, 1);
+                #elif defined(Debug_Metallic)
+                    return half4(miniSurfaceData.metalic_occlusion_roughness_emissionMask.r, miniSurfaceData.metalic_occlusion_roughness_emissionMask.r, miniSurfaceData.metalic_occlusion_roughness_emissionMask.r, 1);
+                #elif defined(Debug_AO)
+                    return half4(miniSurfaceData.metalic_occlusion_roughness_emissionMask.g, miniSurfaceData.metalic_occlusion_roughness_emissionMask.g, miniSurfaceData.metalic_occlusion_roughness_emissionMask.g, 1);
+                #elif defined(Debug_Roughness)
+                    return half4(miniSurfaceData.metalic_occlusion_roughness_emissionMask.b, miniSurfaceData.metalic_occlusion_roughness_emissionMask.b, miniSurfaceData.metalic_occlusion_roughness_emissionMask.b, 1);
+                #elif defined(Debug_Emission)
+                    return half4(miniSurfaceData.metalic_occlusion_roughness_emissionMask.a * _EmissionColor.rgb, 1);
+                #elif defined(Debug_Light)
+                    return half4(light.color, 1);
+                #elif defined(Debug_BakedGI)
+                    return half4(inputData.bakedGI, 1);
+                #endif
 
                 return half4(finalColor, 1.0h);
             }
