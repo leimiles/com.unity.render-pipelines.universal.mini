@@ -189,12 +189,48 @@ namespace UnityEngine.Rendering.Universal
         public override string ToString() => pipelineAsset?.ToString();
 
         /// <summary>
+        /// edited by zhulei, this is for wx performance
+        /// </summary>
+        /// <param name="asset"></param>
+        void SetPipelineAssetSettingsForWX(UniversalRenderPipelineAsset asset)
+        {
+            //asset.renderScale = 1.0f;     this will cause multiple depthattachment on webgl platform
+            asset.supportsCameraOpaqueTexture = false;
+            asset.supportsCameraDepthTexture = false;
+            asset.supportsHDR = false;
+            asset.mainLightRenderingMode = LightRenderingMode.PerPixel;
+            if (asset.shadowCascadeCount > 2)
+            {
+                asset.shadowCascadeCount = 2;
+            }
+            asset.additionalLightsRenderingMode = LightRenderingMode.Disabled;
+            asset.mainLightShadowmapResolution = 1024;
+            asset.colorGradingMode = ColorGradingMode.LowDynamicRange;
+            asset.msaaSampleCount = 1;
+            UniversalRendererData universalRendererData = asset.scriptableRendererData as UniversalRendererData;
+            if (universalRendererData != null)
+            {
+                universalRendererData.intermediateTextureMode = IntermediateTextureMode.Auto;
+                universalRendererData.depthPrimingMode = DepthPrimingMode.Disabled;
+                universalRendererData.accurateGbufferNormals = false;
+                universalRendererData.useNativeRenderPass = false;
+                universalRendererData.shadowTransparentReceive = false;
+                universalRendererData.postProcessData = null;
+            }
+            // to do more clipped feature
+
+        }
+
+        /// <summary>
         /// Creates a new <c>UniversalRenderPipeline</c> instance.
         /// </summary>
         /// <param name="asset">The <c>UniversalRenderPipelineAsset</c> asset to initialize the pipeline.</param>
         /// <seealso cref="RenderPassEvent"/>
         public UniversalRenderPipeline(UniversalRenderPipelineAsset asset)
         {
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
+            SetPipelineAssetSettingsForWX(asset);
+#endif
             pipelineAsset = asset;
 #if UNITY_EDITOR
             m_GlobalSettings = UniversalRenderPipelineGlobalSettings.Ensure();
@@ -235,7 +271,9 @@ namespace UnityEngine.Rendering.Universal
 
             DecalProjector.defaultMaterial = asset.decalMaterial;
 
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             s_RenderGraph = new RenderGraph("URPRenderGraph");
+#endif
             useRenderGraph = false;
 
             DebugManager.instance.RefreshEditor();
@@ -261,8 +299,10 @@ namespace UnityEngine.Rendering.Universal
             ShaderData.instance.Dispose();
             XRSystem.Dispose();
 
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             s_RenderGraph.Cleanup();
             s_RenderGraph = null;
+#endif
 
 #if UNITY_EDITOR
             SceneViewDrawMode.ResetDrawMode();
@@ -385,7 +425,9 @@ namespace UnityEngine.Rendering.Universal
                 }
             }
 
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             s_RenderGraph.EndFrame();
+#endif
 
 #if UNITY_2021_1_OR_NEWER
             using (new ProfilingScope(null, Profiling.Pipeline.endContextRendering))

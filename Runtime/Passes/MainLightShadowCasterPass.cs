@@ -31,8 +31,9 @@ namespace UnityEngine.Rendering.Universal.Internal
 
         int m_MainLightShadowmapID;
         internal RTHandle m_MainLightShadowmapTexture;
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
         internal RTHandle m_EmptyLightShadowmapTexture;
-
+#endif
         Matrix4x4[] m_MainLightShadowMatrices;
         ShadowSliceData[] m_CascadeSlices;
         Vector4[] m_CascadeSplitDistances;
@@ -70,7 +71,9 @@ namespace UnityEngine.Rendering.Universal.Internal
             MainLightShadowConstantBuffer._ShadowmapSize = Shader.PropertyToID("_MainLightShadowmapSize");
 
             m_MainLightShadowmapID = Shader.PropertyToID("_MainLightShadowmapTexture");
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             m_EmptyLightShadowmapTexture = ShadowUtils.AllocShadowRT(1, 1, k_ShadowmapBufferBits, 1, 0, name: "_EmptyLightShadowmapTexture");
+#endif
         }
 
         /// <summary>
@@ -79,7 +82,9 @@ namespace UnityEngine.Rendering.Universal.Internal
         public void Dispose()
         {
             m_MainLightShadowmapTexture?.Release();
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             m_EmptyLightShadowmapTexture?.Release();
+#endif
         }
 
         /// <summary>
@@ -139,8 +144,9 @@ namespace UnityEngine.Rendering.Universal.Internal
             m_CascadeBorder = renderingData.shadowData.mainLightShadowCascadeBorder;
             m_CreateEmptyShadowmap = false;
             useNativeRenderPass = true;
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             ShadowUtils.ShadowRTReAllocateIfNeeded(ref m_EmptyLightShadowmapTexture, 1, 1, k_ShadowmapBufferBits, name: "_EmptyLightShadowmapTexture");
-
+#endif
             return true;
         }
 
@@ -151,19 +157,23 @@ namespace UnityEngine.Rendering.Universal.Internal
 
             m_CreateEmptyShadowmap = true;
             useNativeRenderPass = false;
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             ShadowUtils.ShadowRTReAllocateIfNeeded(ref m_EmptyLightShadowmapTexture, 1, 1, k_ShadowmapBufferBits, name: "_EmptyLightShadowmapTexture");
-
+#endif
             return true;
         }
 
         /// <inheritdoc />
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         {
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (m_CreateEmptyShadowmap)
                 ConfigureTarget(m_EmptyLightShadowmapTexture);
             else
+#endif
                 ConfigureTarget(m_MainLightShadowmapTexture);
             ConfigureClear(ClearFlag.All, Color.black);
+
         }
 
         /// <inheritdoc/>
@@ -171,9 +181,10 @@ namespace UnityEngine.Rendering.Universal.Internal
         {
             if (m_CreateEmptyShadowmap)
             {
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                 SetEmptyMainLightCascadeShadowmap(ref context, ref renderingData);
                 renderingData.commandBuffer.SetGlobalTexture(m_MainLightShadowmapID, m_EmptyLightShadowmapTexture.nameID);
-
+#endif
                 return;
             }
 
@@ -195,6 +206,7 @@ namespace UnityEngine.Rendering.Universal.Internal
 
         void SetEmptyMainLightCascadeShadowmap(ref ScriptableRenderContext context, ref RenderingData renderingData)
         {
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             var cmd = renderingData.commandBuffer;
             CoreUtils.SetKeyword(cmd, ShaderKeywordStrings.MainLightShadows, true);
             cmd.SetGlobalVector(MainLightShadowConstantBuffer._ShadowParams,
@@ -203,6 +215,7 @@ namespace UnityEngine.Rendering.Universal.Internal
                 new Vector4(1f / m_EmptyLightShadowmapTexture.rt.width, 1f / m_EmptyLightShadowmapTexture.rt.height, m_EmptyLightShadowmapTexture.rt.width, m_EmptyLightShadowmapTexture.rt.height));
             context.ExecuteCommandBuffer(cmd);
             cmd.Clear();
+#endif
         }
 
         void RenderMainLightCascadeShadowmap(ref ScriptableRenderContext context, ref RenderingData renderingData)

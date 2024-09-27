@@ -101,7 +101,7 @@ namespace UnityEngine.Rendering.Universal
             if (renderingData.cameraData.xr.enabled)
                 createColorTexture |= createDepthTexture;
 #endif
-#if UNITY_ANDROID || UNITY_WEBGL || UNITY_OPENHARMONY
+#if UNITY_ANDROID || UNITY_WEBGL || UNITY_OPENHARMONY || WX_PERFORMANCE_MODE
             // GLES can not use render texture's depth buffer with the color buffer of the backbuffer
             // in such case we create a color texture for it too.
             if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Vulkan)

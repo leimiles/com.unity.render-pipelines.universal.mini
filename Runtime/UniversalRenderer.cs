@@ -38,7 +38,7 @@ namespace UnityEngine.Rendering.Universal
     /// </summary>
     public sealed partial class UniversalRenderer : ScriptableRenderer
     {
-        #if UNITY_SWITCH || UNITY_ANDROID || UNITY_OPENHARMONY
+        #if UNITY_SWITCH || UNITY_ANDROID || UNITY_OPENHARMONY || WX_PERFORMANCE_MODE
         const GraphicsFormat k_DepthStencilFormat = GraphicsFormat.D24_UNorm_S8_UInt;
         const int k_DepthBufferBits = 24;
         #else
@@ -74,11 +74,14 @@ namespace UnityEngine.Rendering.Universal
 
         // Rendering mode setup from UI. The final rendering mode used can be different. See renderingModeActual.
         internal RenderingMode renderingModeRequested => m_RenderingMode;
-
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
         // Actual rendering mode, which may be different (ex: wireframe rendering, hardware not capable of deferred rendering).
         internal RenderingMode renderingModeActual => renderingModeRequested == RenderingMode.Deferred && (GL.wireframe || (DebugHandler != null && DebugHandler.IsActiveModeUnsupportedForDeferred) || m_DeferredLights == null || !m_DeferredLights.IsRuntimeSupportedThisFrame() || m_DeferredLights.IsOverlay)
         ? RenderingMode.Forward
         : this.renderingModeRequested;
+#else
+        internal RenderingMode renderingModeActual => RenderingMode.Forward;
+#endif
 
         bool m_Clustering;
 
@@ -222,7 +225,7 @@ namespace UnityEngine.Rendering.Universal
             this.m_CopyDepthMode = data.copyDepthMode;
             useRenderPassEnabled = data.useNativeRenderPass && SystemInfo.graphicsDeviceType != GraphicsDeviceType.OpenGLES2;
 
-#if UNITY_ANDROID || UNITY_IOS || UNITY_TVOS || UNITY_OPENHARMONY
+#if UNITY_ANDROID || UNITY_IOS || UNITY_TVOS || UNITY_OPENHARMONY || WX_PERFORMANCE_MODE
             this.m_DepthPrimingRecommended = false;
 #else
             this.m_DepthPrimingRecommended = true;
@@ -486,7 +489,11 @@ namespace UnityEngine.Rendering.Universal
 
         bool IsGLDevice()
         {
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             return IsGLESDevice() || SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLCore;
+#else
+            return true;
+#endif
         }
 
         /// <inheritdoc />
@@ -539,6 +546,9 @@ namespace UnityEngine.Rendering.Universal
             // So we disable it to avoid setting multiple render targets
             if (IsGLDevice())
                 requiresRenderingLayer = false;
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+                requiresRenderingLayer = false;
+#endif
 
             bool renderingLayerProvidesByDepthNormalPass = requiresRenderingLayer && renderingLayersEvent == RenderingLayerUtils.Event.DepthNormalPrePass;
             bool renderingLayerProvidesRenderObjectPass = requiresRenderingLayer &&
@@ -661,7 +671,7 @@ namespace UnityEngine.Rendering.Universal
             if (cameraData.xr.enabled)
                 createColorTexture |= createDepthTexture;
 #endif
-#if UNITY_ANDROID || UNITY_WEBGL || UNITY_OPENHARMONY
+#if UNITY_ANDROID || UNITY_WEBGL || UNITY_OPENHARMONY || WX_PERFORMANCE_MODE
             // GLES can not use render texture's depth buffer with the color buffer of the backbuffer
             // in such case we create a color texture for it too.
             if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Vulkan)
