@@ -10,7 +10,7 @@ namespace UnityEngine.Rendering.Universal
         #region Fields
         const string kPreviousViewProjectionNoJitter = "_PrevViewProjMatrix";
         const string kViewProjectionNoJitter = "_NonJitteredViewProjMatrix";
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
         const string kPreviousViewProjectionNoJitterStereo = "_PrevViewProjMatrixStereo";
         const string kViewProjectionNoJitterStereo = "_NonJitteredViewProjMatrixStereo";
 #endif
@@ -94,7 +94,7 @@ namespace UnityEngine.Rendering.Universal
 
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                 if (cameraData.xr.enabled && cameraData.xr.singlePassEnabled)
                 {
                     cmd.SetGlobalMatrixArray(kPreviousViewProjectionNoJitterStereo, motionData.previousViewProjectionStereo);
@@ -151,7 +151,7 @@ namespace UnityEngine.Rendering.Universal
         // NOTE: depends on camera depth to reconstruct static geometry positions
         private static void DrawCameraMotionVectors(ScriptableRenderContext context, CommandBuffer cmd, ref RenderingData renderingData, Camera camera, Material cameraMaterial)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             bool foveatedRendering = renderingData.cameraData.xr.supportsFoveatedRendering;
             bool nonUniformFoveatedRendering = foveatedRendering && XRSystem.foveatedRenderingCaps.HasFlag(FoveatedRenderingCaps.NonUniformRaster);
             if (foveatedRendering)
@@ -167,7 +167,7 @@ namespace UnityEngine.Rendering.Universal
             // Draw fullscreen quad
             cmd.DrawProcedural(Matrix4x4.identity, cameraMaterial, 0, MeshTopology.Triangles, 3, 1);
 
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (foveatedRendering && !nonUniformFoveatedRendering)
                 cmd.SetFoveatedRenderingMode(FoveatedRenderingMode.Disabled);
 #endif
@@ -178,7 +178,7 @@ namespace UnityEngine.Rendering.Universal
 
         private static void DrawObjectMotionVectors(ScriptableRenderContext context, ref RenderingData renderingData, Camera camera, Material objectMaterial, CommandBuffer cmd)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             bool foveatedRendering = renderingData.cameraData.xr.supportsFoveatedRendering;
             if (foveatedRendering)
             {
@@ -195,7 +195,7 @@ namespace UnityEngine.Rendering.Universal
 
             context.DrawRenderers(renderingData.cullResults, ref drawingSettings, ref filteringSettings, ref renderStateBlock);
 
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (foveatedRendering)
             {
                 cmd.SetFoveatedRenderingMode(FoveatedRenderingMode.Disabled);

@@ -155,7 +155,7 @@ namespace UnityEngine.Rendering.Universal.Internal
             var loadAction = RenderBufferLoadAction.DontCare;
             if (!cameraData.isSceneViewCamera && !cameraData.isDefaultViewport)
                 loadAction = RenderBufferLoadAction.Load;
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (cameraData.xr.enabled)
                 loadAction = RenderBufferLoadAction.Load;
 #endif

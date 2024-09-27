@@ -590,7 +590,7 @@ namespace UnityEngine.Rendering.Universal
                 // Note: We rendering to "camera target" we need to get the cameraData.targetTexture as this will get the targetTexture of the camera stack.
                 // Overlay cameras need to output to the target described in the base camera while doing camera stack.
                 RenderTargetIdentifier cameraTargetID = BuiltinRenderTextureType.CameraTarget;
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                 if (cameraData.xr.enabled)
                     cameraTargetID = cameraData.xr.renderTarget;
 #endif
@@ -972,7 +972,7 @@ namespace UnityEngine.Rendering.Universal
             if (motionData == null)
                 return;
 
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (xr.enabled && xr.singlePassEnabled)
             {
                 material.SetMatrixArray(k_ShaderPropertyId_PrevViewProjMStereo, motionData.previousViewProjectionStereo);
@@ -982,7 +982,7 @@ namespace UnityEngine.Rendering.Universal
 #endif
             {
                 int viewProjMIdx = 0;
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                 if (xr.enabled)
                     viewProjMIdx = xr.multipassId;
 #endif
@@ -1252,7 +1252,7 @@ namespace UnityEngine.Rendering.Universal
             var aspectRatio = m_Descriptor.width / (float)m_Descriptor.height;
 
 
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (xrPass != null && xrPass.enabled)
             {
                 if (xrPass.singlePassEnabled)

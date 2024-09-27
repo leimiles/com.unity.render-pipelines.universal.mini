@@ -386,7 +386,7 @@ namespace UnityEditor.Rendering.Universal
         {
             // Strip Foveated Rendering variants on all platforms (except PS5)
             // TODO: add a way to communicate this requirement from the xr plugin directly
-            #if ENABLE_VR && ENABLE_XR_MODULE
+            #if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (strippingData.shaderCompilerPlatform != ShaderCompilerPlatform.PS5NGGC)
             #endif
             {

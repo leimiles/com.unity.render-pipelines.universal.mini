@@ -8,7 +8,7 @@ namespace UnityEditor.Rendering.Universal
         {
             public class Styles
             {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                 public static GUIContent[] xrTargetEyeOptions =
                 {
                     EditorGUIUtility.TrTextContent("None"),

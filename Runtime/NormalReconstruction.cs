@@ -15,7 +15,7 @@ namespace UnityEngine.Rendering.Universal.Internal
         /// <param name="cameraData">CameraData containing camera matrices information.</param>
         public static void SetupProperties(CommandBuffer cmd, in CameraData cameraData)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             int eyeCount = cameraData.xr.enabled && cameraData.xr.singlePassEnabled ? 2 : 1;
 #else
             int eyeCount = 1;

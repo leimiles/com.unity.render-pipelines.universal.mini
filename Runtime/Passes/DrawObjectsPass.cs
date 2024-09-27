@@ -287,7 +287,7 @@ namespace UnityEngine.Rendering.Universal.Internal
                     ref var renderingData = ref data.m_RenderingData;
 
                     // TODO RENDERGRAPH figure out where to put XR proj flip logic so that it can be auto handled in render graph
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                     if (renderingData.cameraData.xr.enabled)
                     {
                         // SetRenderTarget might alter the internal device state(winding order).

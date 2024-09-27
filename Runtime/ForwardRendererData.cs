@@ -102,7 +102,7 @@ namespace UnityEngine.Rendering.Universal
         /// </summary>
         public PostProcessData postProcessData;
 
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
         /// <summary>
         /// Shader resources needed in URP for XR.
         /// </summary>

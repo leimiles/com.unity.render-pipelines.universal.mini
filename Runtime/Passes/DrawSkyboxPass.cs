@@ -38,7 +38,7 @@ namespace UnityEngine.Rendering.Universal
                 }
             }
 
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             // XRTODO: Remove this code once Skybox pass is moved to SRP land.
             if (cameraData.xr.enabled)
             {

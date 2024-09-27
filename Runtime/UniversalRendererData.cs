@@ -134,7 +134,7 @@ namespace UnityEngine.Rendering.Universal
         /// </summary>
         public PostProcessData postProcessData = null;
 
-#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE) && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
         /// <summary>
         /// Shader resources needed in URP for XR.
         /// </summary>
@@ -315,7 +315,7 @@ namespace UnityEngine.Rendering.Universal
             if (postProcessData != null)
                 ResourceReloader.TryReloadAllNullIn(postProcessData, UniversalRenderPipelineAsset.packagePath);
 
-#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE) && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             ResourceReloader.TryReloadAllNullIn(xrSystemData, UniversalRenderPipelineAsset.packagePath);
 #endif
 #endif

@@ -302,7 +302,7 @@ namespace UnityEngine.Rendering.Universal
             using (new ProfilingScope(cmd, ProfilingSampler.Get(URPProfileId.TemporalAA)))
             {
                 int multipassId = 0;
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                 multipassId = cameraData.xr.multipassId;
 #endif
 
@@ -362,7 +362,7 @@ namespace UnityEngine.Rendering.Universal
         internal static void Render(RenderGraph renderGraph, Material taaMaterial, ref CameraData cameraData, ref TextureHandle srcColor, ref TextureHandle srcDepth, ref TextureHandle srcMotionVectors, ref TextureHandle dstColor)
         {
             int multipassId = 0;
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             multipassId = cameraData.xr.multipassId;
 #endif
 

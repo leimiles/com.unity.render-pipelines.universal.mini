@@ -52,7 +52,7 @@ namespace UnityEngine.Rendering.Universal
         private const bool k_CommonGLDefaults = true;
 
         // Foveated Rendering
-        #if ENABLE_VR && ENABLE_XR_MODULE
+        #if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
         [ShaderKeywordFilter.ApplyRulesIfNotGraphicsAPI(GraphicsDeviceType.PlayStation5NGGC)]
         #endif
         [ShaderKeywordFilter.RemoveIf(true, keywordNames: ShaderKeywordStrings.FoveatedRenderingNonUniformRaster)]

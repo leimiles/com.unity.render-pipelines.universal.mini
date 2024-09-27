@@ -9,7 +9,7 @@ namespace UnityEngine.Rendering.Universal
 
         internal static void BeginLateLatching(Camera camera, XRPassUniversal xrPass)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             XR.XRDisplaySubsystem xrDisplay = XRSystem.GetActiveDisplay();
 
             if (xrDisplay != null && xrPass.viewCount == 2) // multiview only
@@ -22,7 +22,7 @@ namespace UnityEngine.Rendering.Universal
 
         internal static void EndLateLatching(Camera camera, XRPassUniversal xrPass)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             XR.XRDisplaySubsystem xrDisplay = XRSystem.GetActiveDisplay();
 
             if (xrDisplay != null && xrPass.isLateLatchEnabled)
@@ -35,7 +35,7 @@ namespace UnityEngine.Rendering.Universal
 
         internal static void UnmarkShaderProperties(CommandBuffer cmd, XRPassUniversal xrPass)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (xrPass.isLateLatchEnabled && xrPass.hasMarkedLateLatch)
             {
                 cmd.UnmarkLateLatchMatrix(CameraLateLatchMatrixType.View);
@@ -49,7 +49,7 @@ namespace UnityEngine.Rendering.Universal
 
         internal static void MarkShaderProperties(CommandBuffer cmd, XRPassUniversal xrPass, bool renderIntoTexture)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (xrPass.isLateLatchEnabled && xrPass.canMarkLateLatch)
             {
                 cmd.MarkLateLatchMatrixShaderPropertyID(CameraLateLatchMatrixType.View, XRBuiltinShaderConstants.unity_StereoMatrixV);

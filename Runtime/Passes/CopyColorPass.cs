@@ -162,7 +162,7 @@ namespace UnityEngine.Rendering.Universal.Internal
             var clearColor = passData.clearColor;
             var sampleOffsetShaderHandle = passData.sampleOffsetShaderHandle;
 
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (disableFoveatedRenderingForPass)
                 cmd.SetFoveatedRenderingMode(FoveatedRenderingMode.Disabled);
 #endif

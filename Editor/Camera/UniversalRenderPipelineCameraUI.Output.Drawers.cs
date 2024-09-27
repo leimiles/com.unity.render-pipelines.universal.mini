@@ -26,7 +26,7 @@ namespace UnityEditor.Rendering.Universal
                             DrawerOutputMultiDisplay
                         )
                         ),
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                     CED.Group(DrawerOutputXRRendering),
 #endif
                     CED.Group(
@@ -173,7 +173,7 @@ namespace UnityEditor.Rendering.Universal
                 }
             }
 
-#if ENABLE_VR && ENABLE_XR_MODULE
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             static void DrawerOutputXRRendering(UniversalRenderPipelineSerializedCamera p, Editor owner)
             {
                 Rect controlRect = EditorGUILayout.GetControlRect(true);
