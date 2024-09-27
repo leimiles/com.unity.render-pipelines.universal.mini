@@ -228,7 +228,7 @@ namespace UnityEngine.Rendering.Universal
         /// <seealso cref="RenderPassEvent"/>
         public UniversalRenderPipeline(UniversalRenderPipelineAsset asset)
         {
-#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
             SetPipelineAssetSettingsForWX(asset);
 #endif
             pipelineAsset = asset;
