@@ -142,7 +142,7 @@ namespace UnityEngine.Rendering.Universal
 
         internal static void SetCameraMatrices(CommandBuffer cmd, ref CameraData cameraData, bool setInverseMatrices, bool isTargetFlipped)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE) && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (cameraData.xr.enabled)
             {
                 cameraData.PushBuiltinShaderConstantsXR(cmd, false);
@@ -945,7 +945,7 @@ namespace UnityEngine.Rendering.Universal
 
         private void BeginRenderGraphXRRendering(RenderGraph renderGraph, ref RenderingData renderingData)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE) && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             using (var builder = renderGraph.AddRenderPass<BeginXRPassData>("BeginXRRendering", out var passData,
                 Profiling.beginXRRendering))
             {
@@ -981,7 +981,7 @@ namespace UnityEngine.Rendering.Universal
 
         private void EndRenderGraphXRRendering(RenderGraph renderGraph, ref RenderingData renderingData)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE) && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             using (var builder = renderGraph.AddRenderPass<EndXRPassData>("EndXRRendering", out var passData,
                 Profiling.endXRRendering))
             {
@@ -1232,7 +1232,7 @@ namespace UnityEngine.Rendering.Universal
                     ExecuteBlock(RenderPassBlock.MainRenderingTransparent, in renderBlocks, context, ref renderingData);
                 }
 
-#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE) && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                 // Late latching is not supported after this point in the frame
                 if (cameraData.xr.enabled)
                     cameraData.xrUniversal.canMarkLateLatch = false;
@@ -1557,7 +1557,7 @@ namespace UnityEngine.Rendering.Universal
                 // { ...
                 // }
                 var depthTargetID = m_CameraDepthTarget.nameID;
-#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE) && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                 if (cameraData.xr.enabled)
                     depthTargetID = new RenderTargetIdentifier(depthTargetID, 0, CubemapFace.Unknown, -1);
 #endif
@@ -1645,7 +1645,7 @@ namespace UnityEngine.Rendering.Universal
                             }
                         }
 
-#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE) && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                         if (cameraData.xr.enabled)
                         {
                             // SetRenderTarget might alter the internal device state(winding order).
@@ -1769,7 +1769,7 @@ namespace UnityEngine.Rendering.Universal
                         else
                             SetRenderTarget(cmd, passColorAttachment.fallback, passDepthAttachment.fallback, finalClearFlag, finalClearColor, renderPass.colorStoreActions[0], renderPass.depthStoreAction);
 
-#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE) && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
                         if (cameraData.xr.enabled)
                         {
                             // SetRenderTarget might alter the internal device state(winding order).
@@ -1792,7 +1792,7 @@ namespace UnityEngine.Rendering.Universal
 
         void BeginXRRendering(CommandBuffer cmd, ScriptableRenderContext context, ref CameraData cameraData)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE) && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (cameraData.xr.enabled)
             {
                 if (cameraData.xrUniversal.isLateLatchEnabled)
@@ -1816,7 +1816,7 @@ namespace UnityEngine.Rendering.Universal
 
         void EndXRRendering(CommandBuffer cmd, ScriptableRenderContext context, ref CameraData cameraData)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE) && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (cameraData.xr.enabled)
             {
                 cameraData.xr.StopSinglePass(cmd);

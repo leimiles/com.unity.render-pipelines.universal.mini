@@ -322,7 +322,7 @@ namespace UnityEngine.Rendering.Universal
                 m_PostProcessPasses.colorGradingLutPass.Render(renderGraph, out frameResources.internalColorLut, ref renderingData);
             }
 
-#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE) && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
+#if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (renderingData.cameraData.xr.hasValidOcclusionMesh)
             m_XROcclusionMeshPass.Render(renderGraph, frameResources.cameraDepth, ref renderingData);
 #endif

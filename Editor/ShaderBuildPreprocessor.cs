@@ -483,7 +483,7 @@ namespace UnityEditor.Rendering.Universal
             rsd.needsReflectionProbeBlending      = urpAsset.reflectionProbeBlending;
             rsd.needsReflectionProbeBoxProjection = urpAsset.reflectionProbeBoxProjection;
 
-            #if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE) && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
+            #if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             rsd.needsProcedural                   = rsd.isUniversalRenderer && universalRendererData.xrSystemData != null;
             #else
             rsd.needsProcedural                   = false;
