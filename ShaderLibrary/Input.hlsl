@@ -10,6 +10,23 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderTypes.cs.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Deprecated.hlsl"
 
+/// Add WebGL RP Support By ZhuLei
+#ifndef WX_PERFORMANCE_MODE
+    #if (defined(SHADER_API_GLES) || defined(SHADER_API_GLES30) || defined(SHADER_API_GLES3))
+        #define WX_PERFORMANCE_MODE 1
+    #else
+        #define WX_PERFORMANCE_MODE 0
+    #endif
+    #ifndef SHADER_API_MOBILE
+        #define SHADER_API_MOBILE WX_PERFORMANCE_MODE
+    #else
+        #if !SHADER_API_MOBILE && WX_PERFORMANCE_MODE
+            #undef SHADER_API_MOBILE
+            #define SHADER_API_MOBILE WX_PERFORMANCE_MODE
+        #endif
+    #endif
+#endif
+
 // Must match: UniversalRenderPipeline.maxVisibleAdditionalLights
 #if (defined(SHADER_API_MOBILE) && (defined(SHADER_API_GLES) || defined(SHADER_API_GLES30))) || defined(SHADER_API_MAX_VISIBLE_LIGHTS_16)
     #define MAX_VISIBLE_LIGHTS 16
