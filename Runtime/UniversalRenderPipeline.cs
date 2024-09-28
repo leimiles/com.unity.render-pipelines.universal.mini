@@ -203,7 +203,9 @@ namespace UnityEngine.Rendering.Universal
             {
                 asset.shadowCascadeCount = 2;
             }
+#if !UNITY_EDITOR
             asset.additionalLightsRenderingMode = LightRenderingMode.Disabled;
+#endif
             asset.mainLightShadowmapResolution = 1024;
             asset.colorGradingMode = ColorGradingMode.LowDynamicRange;
             asset.msaaSampleCount = 1;
