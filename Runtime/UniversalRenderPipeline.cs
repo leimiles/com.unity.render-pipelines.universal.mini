@@ -352,6 +352,16 @@ namespace UnityEngine.Rendering.Universal
             useRenderGraph = false;
 #endif
 
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            // diable rendergraph
+            useRenderGraph = false;
+            // only one camera works for wx
+            if (cameras.Count > 1)
+            {
+                cameras.RemoveRange(1, cameras.Count - 1);
+            }
+#endif
+
             SetHDRState(cameras);
 
             // When HDR is active we render UI overlay per camera as we want all UI to be calibrated to white paper inside a single pass
@@ -736,6 +746,10 @@ namespace UnityEngine.Rendering.Universal
             // The renderer is checked if it supports Base camera. Since Base is the only relevant type at this moment.
             var renderer = baseCameraAdditionalData?.scriptableRenderer;
             bool supportsCameraStacking = renderer != null && renderer.SupportsCameraStackingType(CameraRenderType.Base);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            // disable camera stack for wx
+            supportsCameraStacking = false;
+#endif
             List<Camera> cameraStack = (supportsCameraStacking) ? baseCameraAdditionalData?.cameraStack : null;
 
             bool anyPostProcessingEnabled = baseCameraAdditionalData != null && baseCameraAdditionalData.renderPostProcessing;
