@@ -203,7 +203,7 @@ namespace UnityEngine.Rendering.Universal
             {
                 asset.shadowCascadeCount = 2;
             }
-#if !UNITY_EDITOR
+#if !UNITY_EDITOR && WX_PERFORMANCE_MODE
             asset.additionalLightsRenderingMode = LightRenderingMode.Disabled;
 #endif
             asset.mainLightShadowmapResolution = 1024;

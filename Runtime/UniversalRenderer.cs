@@ -596,7 +596,11 @@ namespace UnityEngine.Rendering.Universal
 #endif
 
             bool mainLightShadows = m_MainLightShadowCasterPass.Setup(ref renderingData);
+#if UNITY_EDITOR || (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             bool additionalLightShadows = m_AdditionalLightsShadowCasterPass.Setup(ref renderingData);
+#else
+            bool additionalLightShadows = false;
+#endif
             bool transparentsNeedSettingsPass = m_TransparentSettingsPass.Setup(ref renderingData);
 
             bool forcePrepass = (m_CopyDepthMode == CopyDepthMode.ForcePrepass);
