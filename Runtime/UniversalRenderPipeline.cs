@@ -212,6 +212,7 @@ namespace UnityEngine.Rendering.Universal
             UniversalRendererData universalRendererData = asset.scriptableRendererData as UniversalRendererData;
             if (universalRendererData != null)
             {
+                universalRendererData.renderingMode = RenderingMode.Forward;
                 universalRendererData.intermediateTextureMode = IntermediateTextureMode.Auto;
                 universalRendererData.depthPrimingMode = DepthPrimingMode.Disabled;
                 universalRendererData.accurateGbufferNormals = false;
