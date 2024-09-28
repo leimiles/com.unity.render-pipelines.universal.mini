@@ -197,6 +197,7 @@ namespace UnityEngine.Rendering.Universal
             //asset.renderScale = 1.0f;     this will cause multiple depthattachment on webgl platform
             asset.supportsCameraOpaqueTexture = false;
             asset.supportsCameraDepthTexture = false;
+            asset.enableRenderGraph = false;
             asset.supportsHDR = false;
             asset.mainLightRenderingMode = LightRenderingMode.PerPixel;
             if (asset.shadowCascadeCount > 2)
@@ -352,16 +353,6 @@ namespace UnityEngine.Rendering.Universal
             useRenderGraph = false;
 #endif
 
-#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
-            // diable rendergraph
-            useRenderGraph = false;
-            // only one camera works for wx
-            if (cameras.Count > 1)
-            {
-                cameras.RemoveRange(1, cameras.Count - 1);
-            }
-#endif
-
             SetHDRState(cameras);
 
             // When HDR is active we render UI overlay per camera as we want all UI to be calibrated to white paper inside a single pass
@@ -407,6 +398,13 @@ namespace UnityEngine.Rendering.Universal
 
             SortCameras(cameras);
 #if UNITY_2021_1_OR_NEWER
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            // only one camera works for wx
+            if (cameras.Count > 1)
+            {
+                cameras.RemoveRange(1, cameras.Count - 1);
+            }
+#endif
             for (int i = 0; i < cameras.Count; ++i)
 #else
             for (int i = 0; i < cameras.Length; ++i)
