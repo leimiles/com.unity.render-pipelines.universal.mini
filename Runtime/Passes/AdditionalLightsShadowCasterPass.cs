@@ -838,7 +838,9 @@ namespace UnityEngine.Rendering.Universal.Internal
         /// <inheritdoc/>
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         {
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             ConfigureTarget(m_AdditionalLightsShadowmapHandle);
+#endif
             ConfigureClear(ClearFlag.All, Color.black);
         }
 
