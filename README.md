@@ -42,6 +42,7 @@ issue: 通过 WX_PERFORMANCE_MODE 剔除部分 XR 代码与 shader 变体
 
 #0929
 issues: 通过 camera data 来关闭 post process
+- 未完成，目前 post process 是通过关闭 post processing data 来关闭的
 
 ```
 
