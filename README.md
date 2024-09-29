@@ -10,6 +10,7 @@
 - 提供一套更精简的着色模型作为基础 shader，现在切到该管线后，默认 shading 使用的是 SoFunny/Mini/MiniLit，原有 URP shaders 继续提供
 - 强制使用 single camera 方案，如果场景中出现多个 camera，只有 depth 排序最靠前的 camera 才会生效
 - ui 方案推荐使用 unity ugui
+- 使用时需要先引入 core 代码库， https://git.sofunny.io/engine/packages/com.unity.render-pipelines.core.mini
 
 ### ChangeLog
 ```
