@@ -2,7 +2,7 @@
 
 ## Introduction
 
-- 引入管线前需要为引擎添加 WX_PERFORMANCE_MODE 的宏定义
+- 引入管线前需要为引擎添加 WX_PERFORMANCE_MODE 的宏定义，基于 urp 14.0.9 定制，引擎环境为 Tuanjie 1.2.3+
 - 专为微信小游戏项目而定制，主题思路是轻量，简单，剔除无用的代码，判断，变体
 - 强制关闭一些在小游戏平台使用时负载较高的特性，例如 realtime additional light，2 级以上的级联阴影，后处理等
 - 定制渲染管线逻辑，干掉无用的 rt，例如 additional shadow map，empty shadow map，等
