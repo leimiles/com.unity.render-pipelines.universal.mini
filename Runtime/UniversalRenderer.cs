@@ -74,14 +74,11 @@ namespace UnityEngine.Rendering.Universal
 
         // Rendering mode setup from UI. The final rendering mode used can be different. See renderingModeActual.
         internal RenderingMode renderingModeRequested => m_RenderingMode;
-#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
+
         // Actual rendering mode, which may be different (ex: wireframe rendering, hardware not capable of deferred rendering).
         internal RenderingMode renderingModeActual => renderingModeRequested == RenderingMode.Deferred && (GL.wireframe || (DebugHandler != null && DebugHandler.IsActiveModeUnsupportedForDeferred) || m_DeferredLights == null || !m_DeferredLights.IsRuntimeSupportedThisFrame() || m_DeferredLights.IsOverlay)
         ? RenderingMode.Forward
         : this.renderingModeRequested;
-#else
-        internal RenderingMode renderingModeActual => RenderingMode.Forward;
-#endif
 
         bool m_Clustering;
 
@@ -484,16 +481,16 @@ namespace UnityEngine.Rendering.Universal
 
         bool IsGLESDevice()
         {
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            return true;
+#else
             return SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES2 || SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3;
+#endif
         }
 
         bool IsGLDevice()
         {
-#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             return IsGLESDevice() || SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLCore;
-#else
-            return true;
-#endif
         }
 
         /// <inheritdoc />
@@ -546,9 +543,6 @@ namespace UnityEngine.Rendering.Universal
             // So we disable it to avoid setting multiple render targets
             if (IsGLDevice())
                 requiresRenderingLayer = false;
-#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
-                requiresRenderingLayer = false;
-#endif
 
             bool renderingLayerProvidesByDepthNormalPass = requiresRenderingLayer && renderingLayersEvent == RenderingLayerUtils.Event.DepthNormalPrePass;
             bool renderingLayerProvidesRenderObjectPass = requiresRenderingLayer &&
@@ -596,11 +590,7 @@ namespace UnityEngine.Rendering.Universal
 #endif
 
             bool mainLightShadows = m_MainLightShadowCasterPass.Setup(ref renderingData);
-#if UNITY_EDITOR || (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             bool additionalLightShadows = m_AdditionalLightsShadowCasterPass.Setup(ref renderingData);
-#else
-            bool additionalLightShadows = false;
-#endif
             bool transparentsNeedSettingsPass = m_TransparentSettingsPass.Setup(ref renderingData);
 
             bool forcePrepass = (m_CopyDepthMode == CopyDepthMode.ForcePrepass);

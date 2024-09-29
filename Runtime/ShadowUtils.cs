@@ -288,6 +288,7 @@ namespace UnityEngine.Rendering.Universal
                 // Frustum size is guaranteed to be a cube as we wrap shadow frustum around a sphere
                 frustumSize = 2.0f / lightProjectionMatrix.m00;
             }
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             else if (shadowLight.lightType == LightType.Spot)
             {
                 // For perspective projections, shadow texel size varies with depth
@@ -298,7 +299,6 @@ namespace UnityEngine.Rendering.Universal
                 // Depending on how big the light range is, it will be good enough with some tweaks in bias
                 frustumSize = Mathf.Tan(shadowLight.spotAngle * 0.5f * Mathf.Deg2Rad) * shadowLight.range; // half-width (in world-space units) of shadow frustum's "far plane"
             }
-#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             else if (shadowLight.lightType == LightType.Point)
             {
                 // [Copied from above case:]
@@ -317,7 +317,11 @@ namespace UnityEngine.Rendering.Universal
 #endif
             else
             {
+#if (WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
+                Debug.LogWarning("Only directional shadow casters are supported in universal pipeline");
+#else
                 Debug.LogWarning("Only point, spot and directional shadow casters are supported in universal pipeline");
+#endif
                 frustumSize = 0.0f;
             }
 
