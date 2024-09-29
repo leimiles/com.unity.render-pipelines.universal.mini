@@ -15,29 +15,33 @@
 ### ChangeLog
 ```
 #0928
-issue：删除 mini rp 关于实时 addtionallight 的功能，包括 shader compile，但是不能影响烘焙~~
+issue: 删除 mini rp 关于实时 addtionallight 的功能，包括 shader compile，但是不能影响烘焙
 - 修改后 additionallight 可以不占用分配
 - urp 原生 shader 如果使用了 keyword ，将不渲染，所以将所有 shader 的 keyword 删掉 _ADDITIONAL_LIGHT_SHADOWS
 - Done
 
-issue：删除关于 empty shadow 分配和 configure empty shadow target 的功能
+issue: 删除关于 empty shadow 分配和 configure empty shadow target 的功能
 - 没有删除分配，但是 configure empty shadow target 似乎没有了
 - 现在如果从摄影机关闭 shadow，main shadow target 会遗留下来，必须管线里关闭
+- 现在如果在 light 上关闭 shadow，main shadow target 也会遗留下来，必须管线里关闭
 
-issue：修复 js 关于 no valid shadow casters 的报错~~
+issue: 修复 js 关于 no valid shadow casters 的报错
 - 在关闭实时 additional light map 之后，已经没有这个报错了
 - Done
 
-issue：让 minilit shader 支持 additionallight 烘焙
+issue: 让 minilit shader 支持 additionallight 烘焙
 - 未完成，但是如果想用点光源烘焙的结果，可以使用 urp 的 simple lit
 
-issue：让 mini rp 能够强制仅使用但相机方案?
+issue: 让 mini rp 能够强制仅使用但相机方案
 - 在 game 相机数量大于 1 时，只保留第一个排序后的第一个
 - 关闭 camera stack 功能
 - Done
 
 issue: 通过 WX_PERFORMANCE_MODE 剔除部分 XR 代码与 shader 变体
 - Done
+
+#0929
+issues: 通过 camera data 来关闭 post process
 
 ```
 
