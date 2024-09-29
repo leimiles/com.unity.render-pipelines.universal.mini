@@ -1,5 +1,44 @@
 # com.unity.render-pipelines.universal.mini
 
+## Introduction
+
+- 引入管线前需要为引擎添加 WX_PERFORMANCE_MODE 的宏定义
+- 专为微信小游戏项目而定制，主题思路是轻量，简单，剔除无用的代码，判断，变体
+- 强制关闭一些在小游戏平台使用时负载较高的特性，例如 realtime additional light，2 级以上的级联阴影，后处理等
+- 定制渲染管线逻辑，干掉无用的 rt，例如 additional shadow map，empty shadow map，等
+- 修复一些应用中的问题，例如在使用 render scale 的情况下 depth attachement 会成倍增加等
+- 提供一套更精简的着色模型作为基础 shader，现在切到该管线后，默认 shading 使用的是 SoFunny/Mini/MiniLit，原有 URP shaders 继续提供
+- 强制使用 single camera 方案，如果场景中出现多个 camera，只有 depth 排序最靠前的 camera 才会生效
+- ui 方案推荐使用 unity ugui
+
+### ChangeLog
+```
+#0928
+issue：删除 mini rp 关于实时 addtionallight 的功能，包括 shader compile，但是不能影响烘焙~~
+- 修改后 additionallight 可以不占用分配
+- urp 原生 shader 如果使用了 keyword ，将不渲染，所以将所有 shader 的 keyword 删掉 _ADDITIONAL_LIGHT_SHADOWS
+- Done
+
+issue：删除关于 empty shadow 分配和 configure empty shadow target 的功能
+- 没有删除分配，但是 configure empty shadow target 似乎没有了
+- 现在如果从摄影机关闭 shadow，main shadow target 会遗留下来，必须管线里关闭
+
+issue：修复 js 关于 no valid shadow casters 的报错~~
+- 在关闭实时 additional light map 之后，已经没有这个报错了
+- Done
+
+issue：让 minilit shader 支持 additionallight 烘焙
+- 未完成，但是如果想用点光源烘焙的结果，可以使用 urp 的 simple lit
+
+issue：让 mini rp 能够强制仅使用但相机方案?
+- 在 game 相机数量大于 1 时，只保留第一个排序后的第一个
+- 关闭 camera stack 功能
+- Done
+
+issue: 通过 WX_PERFORMANCE_MODE 剔除部分 XR 代码与 shader 变体
+- Done
+
+```
 
 
 ## Getting started
