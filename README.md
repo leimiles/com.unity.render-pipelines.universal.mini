@@ -35,6 +35,8 @@ issue: 让 minilit shader 支持 additionallight 烘焙
 issue: 让 mini rp 能够强制仅使用但相机方案
 - 在 game 相机数量大于 1 时，只保留第一个排序后的第一个
 - 关闭 camera stack 功能
+- 在 overlay camera 被移除后，原本 camera 会报错
+- 禁用了 camera stack 的添加功能
 - Done
 
 issue: 通过 WX_PERFORMANCE_MODE 剔除部分 XR 代码与 shader 变体
