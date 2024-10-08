@@ -22,11 +22,11 @@ Shader "SoFunny/Mini/MiniLit"
 
             HLSLPROGRAM
             #pragma target 2.0
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             #include "MiniInput.hlsl"
             #include "MiniLighting.hlsl"
 
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
             #pragma multi_compile _ LIGHTMAP_ON
             #pragma multi_compile _ Debug_Albedo Debug_Normal Debug_Metallic Debug_AO Debug_Roughness Debug_Emission Debug_Light Debug_BakedGI
 
@@ -55,6 +55,9 @@ Shader "SoFunny/Mini/MiniLit"
                 half4 bitangentWS : TEXCOORD4;  // w = viewDir.z
                 half4 sh_tangentSign : TEXCOORD5;
                 float3 positionWS : TEXCOORD6;
+                #ifdef _ADDITIONAL_LIGHTS_VERTEX
+                    half3 vertexLight : TEXCOORD7; // x: fogFactor, yzw: vertex light
+                #endif
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -86,7 +89,10 @@ Shader "SoFunny/Mini/MiniLit"
                 inputData.shadowCoord = TransformWorldToShadowCoord(inputData.positionWS);      // just because we only need shadow cascade situation
 
                 //inputData.fogCoord = 0; //    no need for now
-                //inputData.vertexLighting = 0    // no need for now
+                #ifdef _ADDITIONAL_LIGHTS_VERTEX
+                    inputData.vertexLighting = input.vertexLight;  
+                #endif
+                
                 #if defined(LIGHTMAP_ON)
                     inputData.bakedGI = SampleLightmap(input.uv0uv1.zw, 0, inputData.normalWS);
                 #else
@@ -118,6 +124,10 @@ Shader "SoFunny/Mini/MiniLit"
                 #if defined(LIGHTMAP_ON)
                     o.uv0uv1.zw = v.texcoord1 * unity_LightmapST.xy + unity_LightmapST.zw;
                 #endif
+
+                #ifdef _ADDITIONAL_LIGHTS_VERTEX
+                    o.vertexLight = VertexLighting(vpi.positionWS, vni.normalWS);
+                #endif
                 return o;
             }
 
@@ -134,27 +144,16 @@ Shader "SoFunny/Mini/MiniLit"
                 //half ndotv = max(dot(inputData.normalWS, inputData.viewDirectionWS), 0.0);    // I need to fix this
                 half ndotv = 0.5h;
 
-                Light light = GetMainLight(inputData.shadowCoord, inputData.positionWS, half4(1, 1, 1, 1));
-
                 inputData.bakedGI *= miniSurfaceData.metalic_occlusion_roughness_emissionMask.g;
                 #if defined(LIGHTMAP_ON)
                     inputData.bakedGI = SubtractDirectMainLightFromLightmap(light, inputData.normalWS, inputData.bakedGI);
                 #endif
 
-                half3 diffuse;
-                half3 specular;
-                MiniLightingGeneral(
-                    inputData.normalWS,
-                    light.direction,
-                    inputData.viewDirectionWS,
-                    light.color,
-                    1.0h - miniSurfaceData.metalic_occlusion_roughness_emissionMask.r, // because of white texture input by default
+                half3 finalColor = MiniLightingGeneral(
+                    inputData, miniSurfaceData, 1.0h - miniSurfaceData.metalic_occlusion_roughness_emissionMask.r, // because of white texture input by default
                     miniSurfaceData.metalic_occlusion_roughness_emissionMask.b,
-                    ndotv,
-                    diffuse,
-                    specular);
-
-                half3 finalColor = (diffuse.rgb * light.shadowAttenuation + inputData.bakedGI) * miniSurfaceData.albedo + specular.rgb ;
+                    ndotv);
+                    
                 finalColor += miniSurfaceData.metalic_occlusion_roughness_emissionMask.a * _EmissionColor.rgb;
 
                 #if defined(Debug_Albedo)
