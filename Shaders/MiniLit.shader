@@ -27,6 +27,7 @@ Shader "SoFunny/Mini/MiniLit"
             #include "MiniLighting.hlsl"
 
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
             #pragma multi_compile _ LIGHTMAP_ON
             #pragma multi_compile _ Debug_Albedo Debug_Normal Debug_Metallic Debug_AO Debug_Roughness Debug_Emission Debug_Light Debug_BakedGI
 
@@ -57,6 +58,9 @@ Shader "SoFunny/Mini/MiniLit"
                 half4 bitangentWS : TEXCOORD4;  // w = viewDir.z
                 half4 sh_tangentSign : TEXCOORD5;
                 float3 positionWS : TEXCOORD6;
+                #ifdef _ADDITIONAL_LIGHTS_VERTEX
+                    half3 vertexLight : TEXCOORD7; // x: fogFactor, yzw: vertex light
+                #endif
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
