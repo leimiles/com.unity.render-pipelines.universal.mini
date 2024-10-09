@@ -168,8 +168,8 @@ Shader "SoFunny/Mini/MiniLit"
                     return half4(miniSurfaceData.metalic_occlusion_roughness_emissionMask.b, miniSurfaceData.metalic_occlusion_roughness_emissionMask.b, miniSurfaceData.metalic_occlusion_roughness_emissionMask.b, 1);
                 #elif defined(Debug_Emission)
                     return half4(miniSurfaceData.metalic_occlusion_roughness_emissionMask.a * _EmissionColor.rgb, 1);
-                #elif defined(Debug_Light)
-                    return half4(light.color, 1);
+                // #elif defined(Debug_Light)
+                //     return half4(light.color, 1);
                 #elif defined(Debug_BakedGI)
                     return half4(inputData.bakedGI, 1);
                 #endif

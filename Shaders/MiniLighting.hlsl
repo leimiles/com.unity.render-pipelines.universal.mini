@@ -58,8 +58,6 @@ half3 MiniLightingSpecular(Light light, half3 normal, half3 viewDir, half fZero,
 
 half3 MiniLightingGeneral(InputData inputData, MiniSurfaceData miniSurfaceData, half fZero, half roughness, half ndotv)
 {
-    //LightingData lightingData = CreateLightingData(inputData, surfaceData);
-    
     Light mainLight = GetMainLight(inputData.shadowCoord, inputData.positionWS, half4(1, 1, 1, 1));
 
     // mainlight
