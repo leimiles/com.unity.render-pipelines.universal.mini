@@ -46,7 +46,7 @@ Shader "SoFunny/Mini/MiniOutline"
             half4 frag(Varyings i) : SV_Target
             {
                 UNITY_SETUP_INSTANCE_ID(i);
-                return half4(0, 0, 0, 1.0h);
+                return half4(0.2, 0.1, 0.1, 1.0h);
             }
 
             ENDHLSL
