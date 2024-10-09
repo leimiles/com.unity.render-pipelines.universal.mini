@@ -10,6 +10,7 @@ Shader "SoFunny/Mini/MiniLit"
         [NoScaleOffset] _MAREConfig ("MARE Configure", Vector) = (1, 1, 1, 1)
         [HDR]_EmissionColor ("Emission Color", Color) = (0, 0, 0, 0)
         _ST ("Scale And Offset", Vector) = (1, 1, 0, 0)
+        [Toggle(_ADDITIONAL_LIGHTS)] _AddLightOn ("Additional Light On", Float) = 0
     }
 
     SubShader
@@ -26,13 +27,14 @@ Shader "SoFunny/Mini/MiniLit"
             #include "MiniLighting.hlsl"
 
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
-            #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
             #pragma multi_compile _ LIGHTMAP_ON
             #pragma multi_compile _ Debug_Albedo Debug_Normal Debug_Metallic Debug_AO Debug_Roughness Debug_Emission Debug_Light Debug_BakedGI
 
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
             #pragma multi_compile _ ENABLE_VS_SKINNING
 
+            #pragma shader_feature_local _ADDITIONAL_LIGHTS
+            
             #pragma vertex vert
             #pragma fragment frag
 
@@ -55,9 +57,6 @@ Shader "SoFunny/Mini/MiniLit"
                 half4 bitangentWS : TEXCOORD4;  // w = viewDir.z
                 half4 sh_tangentSign : TEXCOORD5;
                 float3 positionWS : TEXCOORD6;
-                #ifdef _ADDITIONAL_LIGHTS_VERTEX
-                    half3 vertexLight : TEXCOORD7; // x: fogFactor, yzw: vertex light
-                #endif
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -89,9 +88,7 @@ Shader "SoFunny/Mini/MiniLit"
                 inputData.shadowCoord = TransformWorldToShadowCoord(inputData.positionWS);      // just because we only need shadow cascade situation
 
                 //inputData.fogCoord = 0; //    no need for now
-                #ifdef _ADDITIONAL_LIGHTS_VERTEX
-                    inputData.vertexLighting = input.vertexLight;  
-                #endif
+                //inputData.vertexLighting = input.vertexLight;  //    no need for now
                 
                 #if defined(LIGHTMAP_ON)
                     inputData.bakedGI = SampleLightmap(input.uv0uv1.zw, 0, inputData.normalWS);
@@ -124,10 +121,7 @@ Shader "SoFunny/Mini/MiniLit"
                 #if defined(LIGHTMAP_ON)
                     o.uv0uv1.zw = v.texcoord1 * unity_LightmapST.xy + unity_LightmapST.zw;
                 #endif
-
-                #ifdef _ADDITIONAL_LIGHTS_VERTEX
-                    o.vertexLight = VertexLighting(vpi.positionWS, vni.normalWS);
-                #endif
+                
                 return o;
             }
 
