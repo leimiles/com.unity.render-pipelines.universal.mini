@@ -13,7 +13,7 @@ Shader "SoFunny/Mini/MiniOutline"
             HLSLPROGRAM
             #pragma target 2.0
             #include "MiniInput.hlsl"
-            #pragma multi_compile ENABLE_VS_SKINNING        // always use vs_skinning because it's recommonded for webgl
+            #pragma multi_compile _ ENABLE_VS_SKINNING        // always use vs_skinning because it's recommonded for webgl
             #pragma vertex vert
             #pragma fragment frag
 

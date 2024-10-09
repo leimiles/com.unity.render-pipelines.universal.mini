@@ -56,6 +56,7 @@ public class SimpleOutlineFeature : ScriptableRendererFeature
         if (m_Material == null && m_Shader != null)
         {
             m_Material = CoreUtils.CreateEngineMaterial(m_Shader);
+            m_Material.EnableKeyword("ENABLE_VS_SKINNING");
         }
     }
 
