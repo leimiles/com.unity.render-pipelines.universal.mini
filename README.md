@@ -51,7 +51,8 @@ issues: mini rp 的 minilit 还是需要支持实时点光源功能
 
 #1009
 issues: 添加简单 outline feature
-- 开发中
+- 使用简单挤出的方法，保证 srp batch
+- Done
 
 ```
 
