@@ -13,7 +13,7 @@ Shader "SoFunny/Mini/MiniOutline"
             HLSLPROGRAM
             #pragma target 2.0
             #include "MiniInput.hlsl"
-            #pragma multi_compile _ ENABLE_VS_SKINNING
+            #pragma multi_compile ENABLE_VS_SKINNING        // always use vs_skinning because it's recommonded for webgl
             #pragma vertex vert
             #pragma fragment frag
 
@@ -37,7 +37,7 @@ Shader "SoFunny/Mini/MiniOutline"
                 UNITY_SETUP_INSTANCE_ID(v);
                 UNITY_TRANSFER_INSTANCE_ID(v, o);
                 v.positionOS.xyz += SafeNormalize(v.normalOS.xyz) * 0.03f;
-                o.positionCS = TransformObjectToHClip(v.positionOS.xyz);        // don't use getvertexpositioninput api, it's not working for webgl on skinned mesh when using drawrenderers
+                o.positionCS = TransformObjectToHClip(v.positionOS.xyz);
                 VertexNormalInputs vni = GetVertexNormalInputs(v.normalOS);
                 o.normalWS = half4(vni.normalWS, 1.0);
                 return o;
