@@ -54,6 +54,15 @@ issues: 添加简单 outline feature
 - 使用简单挤出的方法，保证 srp batch
 - Done
 
+issues: additional lights cookies format 警告
+- !Additional Lights Cookie Format(GrayscaleHigh)is not supported by the platform.Falling back to 32 bit format(RGBA8 UNorm)
+
+issues: mini lit 数据转换 警告
+- GLSL link error:ERROR:0:10:'assign': cannot convert from 'float' to '4-component vector of float' ERROR:1 compilation errors. No code generated.
+
+issues: ShadowAuto 警告
+- 'ShadowAuto'is not supported. RenderTexture::GetTemporary fallbacks to DepthAuto format on this platform.Use 'SystemInfo IsFormatSupported'C#API to check format support.
+
 ```
 
 
