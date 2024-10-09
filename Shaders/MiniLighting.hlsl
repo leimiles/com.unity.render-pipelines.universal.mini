@@ -74,10 +74,6 @@ half3 MiniLightingGeneral(InputData inputData, MiniSurfaceData miniSurfaceData, 
         LIGHT_LOOP_END
     #endif
 
-    #if defined(_ADDITIONAL_LIGHTS_VERTEX)
-        outDiffuse.rgb += inputData.vertexLighting;
-    #endif
-
     return half3((outDiffuse.rgb + inputData.bakedGI) * miniSurfaceData.albedo + outSpecular);
 }
 
