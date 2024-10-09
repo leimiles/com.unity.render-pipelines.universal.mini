@@ -49,6 +49,10 @@ issues: 通过 camera data 来关闭 post process
 issues: mini rp 的 minilit 还是需要支持实时点光源功能
 - 交给了 YN 开发中
 
+#1009
+issues: 添加简单 outline feature
+- 开发中
+
 ```
 
 
