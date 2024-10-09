@@ -37,10 +37,9 @@ Shader "SoFunny/Mini/MiniOutline"
                 UNITY_SETUP_INSTANCE_ID(v);
                 UNITY_TRANSFER_INSTANCE_ID(v, o);
                 v.positionOS.xyz += SafeNormalize(v.normalOS.xyz) * 0.03f;
-                VertexPositionInputs vpi = GetVertexPositionInputs(v.positionOS.xyz);
+                o.positionCS = TransformObjectToHClip(v.positionOS.xyz);        // don't use getvertexpositioninput api, it's not working for webgl on skinned mesh when using drawrenderers
                 VertexNormalInputs vni = GetVertexNormalInputs(v.normalOS);
                 o.normalWS = half4(vni.normalWS, 1.0);
-                o.positionCS = vpi.positionCS;
                 return o;
             }
 
