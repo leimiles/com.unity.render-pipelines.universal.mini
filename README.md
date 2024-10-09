@@ -11,6 +11,7 @@
 - 强制使用 single camera 方案，如果场景中出现多个 camera，只有 depth 排序最靠前的 camera 才会生效
 - ui 方案推荐使用 unity ugui
 - 使用时需要先引入 core 代码库， https://git.sofunny.io/engine/packages/com.unity.render-pipelines.core.mini
+- render feature: simple outline feature，简单挤出式描边效果
 
 ### ChangeLog
 ```
@@ -27,7 +28,7 @@ issue: 删除关于 empty shadow 分配和 configure empty shadow target 的功�
 
 issue: 修复 js 关于 no valid shadow casters 的报错
 - 在关闭实时 additional light map 之后，已经没有这个报错了
-- Done
+- Android 真机上依旧有报错
 
 issue: 让 minilit shader 支持 additionallight 烘焙
 - 未完成，但是如果想用点光源烘焙的结果，可以使用 urp 的 simple lit
@@ -48,6 +49,7 @@ issues: 通过 camera data 来关闭 post process
 
 issues: mini rp 的 minilit 还是需要支持实时点光源功能
 - 交给了 YN 开发中
+- 已提交合并
 
 #1009
 issues: 添加简单 outline feature
