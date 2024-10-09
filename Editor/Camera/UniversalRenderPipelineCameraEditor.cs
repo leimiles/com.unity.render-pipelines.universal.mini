@@ -272,7 +272,7 @@ namespace UnityEditor.Rendering.Universal
         {
 #if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
             return;
-#endif
+#else
             // Need to do clear the list here otherwise the menu just fills up with more and more entries
             validCameras.Clear();
             // Need to get the base renderer here first
@@ -303,6 +303,7 @@ namespace UnityEditor.Rendering.Universal
                 names[0] = new GUIContent("No Overlay Cameras exist.");
             }
             EditorUtility.DisplayCustomMenu(rect, names, -1, AddCameraToCameraListMenuSelected, null);
+#endif
         }
 
         void AddCameraToCameraListMenuSelected(object userData, string[] options, int selected)
