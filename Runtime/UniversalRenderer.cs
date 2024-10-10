@@ -588,11 +588,15 @@ namespace UnityEngine.Rendering.Universal
 #else
             bool isGizmosEnabled = false;
 #endif
-
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            bool mainLightShadows = m_MainLightShadowCasterPass.Setup(ref renderingData);
+            bool additionalLightShadows = false;
+            bool transparentsNeedSettingsPass = false;
+#else
             bool mainLightShadows = m_MainLightShadowCasterPass.Setup(ref renderingData);
             bool additionalLightShadows = m_AdditionalLightsShadowCasterPass.Setup(ref renderingData);
             bool transparentsNeedSettingsPass = m_TransparentSettingsPass.Setup(ref renderingData);
-
+#endif
             bool forcePrepass = (m_CopyDepthMode == CopyDepthMode.ForcePrepass);
 
             // Depth prepass is generated in the following cases:
