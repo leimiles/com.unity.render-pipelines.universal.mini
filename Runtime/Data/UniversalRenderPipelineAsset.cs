@@ -971,8 +971,8 @@ namespace UnityEngine.Rendering.Universal
             get
             {
 #if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
-                return GraphicsFormat.R8G8B8_UNorm;
-#else
+                m_AdditionalLightsCookieFormat = LightCookieFormat.GrayscaleLow;
+#endif
                 GraphicsFormat result = GraphicsFormat.None;
                 foreach (var format in s_LightCookieFormatList[(int)m_AdditionalLightsCookieFormat])
                 {
@@ -994,12 +994,11 @@ namespace UnityEngine.Rendering.Universal
                 }
 
                 return result;
-#endif
             }
         }
 
 #if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
-        internal Vector2Int additionalLightsCookieResolution => new Vector2Int(256, 256);
+        internal Vector2Int additionalLightsCookieResolution => new Vector2Int((int)m_AdditionalLightsCookieResolution, (int)m_AdditionalLightsCookieResolution);
 #else
         internal Vector2Int additionalLightsCookieResolution => new Vector2Int((int)m_AdditionalLightsCookieResolution, (int)m_AdditionalLightsCookieResolution);
 #endif
@@ -1417,7 +1416,12 @@ namespace UnityEngine.Rendering.Universal
         public bool supportsLightCookies
         {
 #if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
-            get { return false; }
+            get
+            {
+                m_SupportsLightCookies = false;
+                return m_SupportsLightCookies;
+
+            }
 #else
             get { return m_SupportsLightCookies; }
 #endif
