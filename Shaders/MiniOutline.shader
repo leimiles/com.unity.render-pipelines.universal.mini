@@ -1,4 +1,4 @@
-Shader "SoFunny/Mini/MiniOutline"
+Shader "Hidden/SoFunny/Mini/MiniOutline"
 {
 
     SubShader

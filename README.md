@@ -65,6 +65,9 @@ issues: mini lit 数据转换 警告
 issues: ShadowAuto 警告
 - 'ShadowAuto'is not supported. RenderTexture::GetTemporary fallbacks to DepthAuto format on this platform.Use 'SystemInfo IsFormatSupported'C#API to check format support.
 
+#1010
+issues: 关闭 additonal light cookie 以及 additional light shadow map
+- Done
 ```
 
 
