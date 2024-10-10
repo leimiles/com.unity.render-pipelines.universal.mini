@@ -241,6 +241,7 @@ namespace UnityEngine.Rendering.Universal
         {
 #if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
             SetPipelineAssetSettingsForWX(asset);
+            MiniRPController.currentAsset = asset;
 #endif
             pipelineAsset = asset;
 #if UNITY_EDITOR
