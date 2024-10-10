@@ -746,8 +746,10 @@ namespace UnityEngine.Rendering.Universal
             if (mainLightShadows)
                 EnqueuePass(m_MainLightShadowCasterPass);
 
+#if (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             if (additionalLightShadows)
                 EnqueuePass(m_AdditionalLightsShadowCasterPass);
+#endif
 
             bool requiresDepthCopyPass = !requiresDepthPrepass
                 && (renderingData.cameraData.requiresDepthTexture || cameraHasPostProcessingWithDepth || renderPassInputs.requiresDepthTexture)
