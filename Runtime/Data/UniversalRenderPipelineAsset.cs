@@ -564,7 +564,12 @@ namespace UnityEngine.Rendering.Universal
         [SerializeField] int m_MaxPixelLights = 0;
         [SerializeField] ShadowResolution m_ShadowAtlasResolution = ShadowResolution._256;
 
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+        [SerializeField] VolumeFrameworkUpdateMode m_VolumeFrameworkUpdateMode = VolumeFrameworkUpdateMode.ViaScripting;
+#else
         [SerializeField] VolumeFrameworkUpdateMode m_VolumeFrameworkUpdateMode = VolumeFrameworkUpdateMode.EveryFrame;
+#endif
+
 
         [SerializeField] TextureResources m_Textures;
 
