@@ -160,14 +160,15 @@ namespace UnityEngine.Rendering.Universal
         internal DeferredLights deferredLights { get => m_DeferredLights; }
         void SetPipelineRendererDataSettingsForWX(UniversalRendererData data)
         {
-            data.renderingMode = RenderingMode.Forward;
-            data.depthPrimingMode = DepthPrimingMode.Disabled;
-            data.copyDepthMode = CopyDepthMode.AfterOpaques;
-            data.useNativeRenderPass = false;
-            data.shadowTransparentReceive = false;
-            data.intermediateTextureMode = IntermediateTextureMode.Auto;
+            // following settings will cause multiple rt bug, to be fixed.
+            //data.renderingMode = RenderingMode.Forward;
+            //data.depthPrimingMode = DepthPrimingMode.Disabled;
+            //data.copyDepthMode = CopyDepthMode.AfterOpaques;
+            //data.useNativeRenderPass = false;
+            //data.shadowTransparentReceive = false;
+            //data.intermediateTextureMode = IntermediateTextureMode.Auto;
+            //data.accurateGbufferNormals = false;
             data.postProcessData = null;
-            data.accurateGbufferNormals = false;
         }
         /// <summary>
         /// Constructor for the Universal Renderer.
