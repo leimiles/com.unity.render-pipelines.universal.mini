@@ -200,6 +200,10 @@ namespace UnityEngine.Rendering.Universal
             asset.enableRenderGraph = false;
             asset.supportsHDR = false;
             asset.mainLightRenderingMode = LightRenderingMode.PerPixel;
+            if (asset.supportsSoftShadows)
+            {
+                asset.softShadowQuality = SoftShadowQuality.Low;
+            }
             if (asset.shadowCascadeCount > 2)
             {
                 asset.shadowCascadeCount = 2;
