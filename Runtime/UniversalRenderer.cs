@@ -158,7 +158,17 @@ namespace UnityEngine.Rendering.Universal
         internal PostProcessPass finalPostProcessPass { get => m_PostProcessPasses.finalPostProcessPass; }
         internal RTHandle colorGradingLut { get => m_PostProcessPasses.colorGradingLut; }
         internal DeferredLights deferredLights { get => m_DeferredLights; }
-
+        void SetPipelineRendererDataSettingsForWX(UniversalRendererData data)
+        {
+            data.renderingMode = RenderingMode.Forward;
+            data.depthPrimingMode = DepthPrimingMode.Disabled;
+            data.copyDepthMode = CopyDepthMode.AfterOpaques;
+            data.useNativeRenderPass = false;
+            data.shadowTransparentReceive = false;
+            data.intermediateTextureMode = IntermediateTextureMode.Auto;
+            data.postProcessData = null;
+            data.accurateGbufferNormals = false;
+        }
         /// <summary>
         /// Constructor for the Universal Renderer.
         /// </summary>
@@ -167,6 +177,10 @@ namespace UnityEngine.Rendering.Universal
         {
             // Query and cache runtime platform info first before setting up URP.
             PlatformAutoDetect.Initialize();
+
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            SetPipelineRendererDataSettingsForWX(data);
+#endif
 
 #if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
             Experimental.Rendering.XRSystem.Initialize(XRPassUniversal.Create, data.xrSystemData.shaders.xrOcclusionMeshPS, data.xrSystemData.shaders.xrMirrorViewPS);

@@ -217,17 +217,6 @@ namespace UnityEngine.Rendering.Universal
             // turn off light cookie
             asset.colorGradingMode = ColorGradingMode.LowDynamicRange;
             asset.msaaSampleCount = 1;
-            UniversalRendererData universalRendererData = asset.scriptableRendererData as UniversalRendererData;
-            if (universalRendererData != null)
-            {
-                universalRendererData.renderingMode = RenderingMode.Forward;
-                universalRendererData.intermediateTextureMode = IntermediateTextureMode.Auto;
-                universalRendererData.depthPrimingMode = DepthPrimingMode.Disabled;
-                universalRendererData.accurateGbufferNormals = false;
-                universalRendererData.useNativeRenderPass = false;
-                universalRendererData.shadowTransparentReceive = false;
-                universalRendererData.postProcessData = null;
-            }
             // to do more clipped feature
 
         }
