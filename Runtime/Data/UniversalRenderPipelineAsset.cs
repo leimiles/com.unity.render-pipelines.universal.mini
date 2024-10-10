@@ -509,8 +509,13 @@ namespace UnityEngine.Rendering.Universal
         [SerializeField] SoftShadowQuality m_SoftShadowQuality = SoftShadowQuality.Medium;
 
         // Light Cookie Settings
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+        [SerializeField] LightCookieResolution m_AdditionalLightsCookieResolution = LightCookieResolution._256;
+        [SerializeField] LightCookieFormat m_AdditionalLightsCookieFormat = LightCookieFormat.GrayscaleLow;
+#else
         [SerializeField] LightCookieResolution m_AdditionalLightsCookieResolution = LightCookieResolution._2048;
         [SerializeField] LightCookieFormat m_AdditionalLightsCookieFormat = LightCookieFormat.ColorHigh;
+#endif
 
         // Advanced settings
         [SerializeField] bool m_UseSRPBatcher = true;
@@ -526,7 +531,11 @@ namespace UnityEngine.Rendering.Universal
         // multi_compile_fragment _ _LIGHT_COOKIES
         [ShaderKeywordFilter.RemoveIf(false, keywordNames: ShaderKeywordStrings.LightCookies)]
 #endif
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+        [SerializeField] bool m_SupportsLightCookies = false;
+#else
         [SerializeField] bool m_SupportsLightCookies = true;
+#endif
 #if UNITY_EDITOR
         // multi_compile_fragment _ _LIGHT_LAYERS
         [ShaderKeywordFilter.ApplyRulesIfNotGraphicsAPI(GraphicsDeviceType.OpenGLES2)]
@@ -961,6 +970,9 @@ namespace UnityEngine.Rendering.Universal
         {
             get
             {
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+                return GraphicsFormat.R8G8B8_UNorm;
+#else
                 GraphicsFormat result = GraphicsFormat.None;
                 foreach (var format in s_LightCookieFormatList[(int)m_AdditionalLightsCookieFormat])
                 {
@@ -982,10 +994,15 @@ namespace UnityEngine.Rendering.Universal
                 }
 
                 return result;
+#endif
             }
         }
 
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+        internal Vector2Int additionalLightsCookieResolution => new Vector2Int(256, 256);
+#else
         internal Vector2Int additionalLightsCookieResolution => new Vector2Int((int)m_AdditionalLightsCookieResolution, (int)m_AdditionalLightsCookieResolution);
+#endif
 
         internal int[] rendererIndexList
         {
@@ -1399,7 +1416,11 @@ namespace UnityEngine.Rendering.Universal
         /// </summary>
         public bool supportsLightCookies
         {
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            get { return false; }
+#else
             get { return m_SupportsLightCookies; }
+#endif
         }
 
         /// <summary>

@@ -205,6 +205,12 @@ namespace UnityEngine.Rendering.Universal
                 asset.shadowCascadeCount = 2;
             }
             asset.mainLightShadowmapResolution = 1024;
+            if (asset.maxAdditionalLightsCount > 4)
+            {
+                asset.maxAdditionalLightsCount = 4;
+            }
+            asset.supportsAdditionalLightShadows = false;
+            // turn off light cookie
             asset.colorGradingMode = ColorGradingMode.LowDynamicRange;
             asset.msaaSampleCount = 1;
             UniversalRendererData universalRendererData = asset.scriptableRendererData as UniversalRendererData;
