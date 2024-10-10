@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-public class MiniRPController
+public static class MiniRPController
 {
-    public static UniversalRenderPipelineAsset currentAsset;
-    public static UniversalRendererData currentRendererData;
+    internal static UniversalRenderPipelineAsset currentAsset;
+    internal static UniversalRendererData currentRendererData;
 
     public static void DebugMainLightShadow()
     {
