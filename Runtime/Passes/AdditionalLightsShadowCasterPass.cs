@@ -492,9 +492,6 @@ namespace UnityEngine.Rendering.Universal.Internal
         /// <returns></returns>
         public bool Setup(ref RenderingData renderingData)
         {
-#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
-            return false;
-#else
             using var profScope = new ProfilingScope(null, m_ProfilingSetupSampler);
 
             Clear();
@@ -819,7 +816,6 @@ namespace UnityEngine.Rendering.Universal.Internal
             useNativeRenderPass = true;
 
             return true;
-#endif
         }
 
         bool SetupForEmptyRendering(ref RenderingData renderingData)

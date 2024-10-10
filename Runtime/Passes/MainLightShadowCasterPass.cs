@@ -160,13 +160,9 @@ namespace UnityEngine.Rendering.Universal.Internal
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         {
             if (m_CreateEmptyShadowmap)
-            {
                 ConfigureTarget(m_EmptyLightShadowmapTexture);
-            }
             else
-            {
                 ConfigureTarget(m_MainLightShadowmapTexture);
-            }
             ConfigureClear(ClearFlag.All, Color.black);
         }
 
