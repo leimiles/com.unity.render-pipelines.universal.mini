@@ -6,6 +6,7 @@ using UnityEngine.Rendering.Universal;
 public class MiniRPController
 {
     public static UniversalRenderPipelineAsset currentAsset;
+    public static UniversalRendererData currentRendererData;
 
     public static void DebugMainLightShadow()
     {

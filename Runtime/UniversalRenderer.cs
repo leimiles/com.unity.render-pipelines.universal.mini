@@ -180,6 +180,7 @@ namespace UnityEngine.Rendering.Universal
 
 #if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
             SetPipelineRendererDataSettingsForWX(data);
+            MiniRPController.currentRendererData = data;
 #endif
 
 #if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)
