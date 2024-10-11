@@ -85,6 +85,9 @@ namespace UnityEditor.Rendering.Universal
             EditorGUILayout.LabelField(Styles.RenderingSectionLabel, EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
             EditorGUILayout.PropertyField(m_RenderingMode, Styles.RenderingModeLabel);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            m_RenderingMode.intValue = 0;       // for wx, we only use forward
+#endif
             if (m_RenderingMode.intValue == (int)RenderingMode.Deferred)
             {
                 EditorGUI.indentLevel++;
@@ -97,6 +100,9 @@ namespace UnityEditor.Rendering.Universal
                 EditorGUI.indentLevel++;
 
                 EditorGUILayout.PropertyField(m_DepthPrimingMode, Styles.DepthPrimingModeLabel);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            m_DepthPrimingMode.intValue = 0;       // for wx, we don't use depth prime
+#endif
                 if (m_DepthPrimingMode.intValue != (int)DepthPrimingMode.Disabled)
                 {
                     EditorGUILayout.HelpBox(Styles.DepthPrimingModeInfo.text, MessageType.Info);
@@ -107,17 +113,26 @@ namespace UnityEditor.Rendering.Universal
 
             EditorGUILayout.PropertyField(m_CopyDepthMode, Styles.CopyDepthModeLabel);
 
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            m_CopyDepthMode.intValue = 0;       // for wx, we don't use copy depth
+#endif
 
             EditorGUI.indentLevel--;
             EditorGUILayout.Space();
             EditorGUILayout.LabelField(Styles.RenderPassSectionLabel, EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
             EditorGUILayout.PropertyField(m_UseNativeRenderPass, Styles.RenderPassLabel);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            m_UseNativeRenderPass.boolValue = false;       // for wx, we don't use native render pass
+#endif
             EditorGUI.indentLevel--;
             EditorGUILayout.Space();
             EditorGUILayout.LabelField(Styles.ShadowsSectionLabel, EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
             EditorGUILayout.PropertyField(m_ShadowTransparentReceiveProp, Styles.shadowTransparentReceiveLabel);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            m_ShadowTransparentReceiveProp.boolValue = false;       // for wx, we don't use transparent shadow
+#endif
             EditorGUI.indentLevel--;
             EditorGUILayout.Space();
 
@@ -125,12 +140,18 @@ namespace UnityEditor.Rendering.Universal
             EditorGUI.indentLevel++;
             EditorGUI.BeginChangeCheck();
             var postProcessIncluded = EditorGUILayout.Toggle(Styles.PostProcessIncluded, m_PostProcessData.objectReferenceValue != null);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            postProcessIncluded = false;       // for wx, we don't use post process
+#endif
             if (EditorGUI.EndChangeCheck())
             {
                 m_PostProcessData.objectReferenceValue = postProcessIncluded ? PostProcessData.GetDefaultPostProcessData() : null;
             }
             EditorGUI.indentLevel++;
             EditorGUILayout.PropertyField(m_PostProcessData, Styles.PostProcessLabel);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            m_PostProcessData.objectReferenceValue = null;       // for wx, we don't use post process
+#endif
             EditorGUI.indentLevel--;
             EditorGUI.indentLevel--;
             EditorGUILayout.Space();
@@ -160,6 +181,9 @@ namespace UnityEditor.Rendering.Universal
             EditorGUI.indentLevel++;
             {
                 EditorGUILayout.PropertyField(m_IntermediateTextureMode, Styles.intermediateTextureMode);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            m_IntermediateTextureMode.intValue = 0;// for wx, we don't use auto
+#endif
             }
             EditorGUI.indentLevel--;
             EditorGUILayout.Space();
