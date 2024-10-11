@@ -22,4 +22,19 @@ public static class MiniRPController
             }
         }
     }
+
+    static int m_RenderingMode = 0;
+    public static void DebugRenderingPath()
+    {
+        if (currentRendererData != null)
+        {
+            currentRendererData.renderingMode = (RenderingMode)(m_RenderingMode);
+            Debug.Log((int)currentRendererData.renderingMode);
+            m_RenderingMode++;
+            if (m_RenderingMode > 2)
+            {
+                m_RenderingMode = 0;
+            }
+        }
+    }
 }
