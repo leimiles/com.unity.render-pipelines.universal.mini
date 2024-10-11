@@ -22,12 +22,22 @@ public class SimpleOutlineFeature : ScriptableRendererFeature
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
+        if (!CreateMaterial())
+        {
+            return;
+        }
         if (m_SimpleOutlinePass == null)
         {
             return;
         }
-        renderer.EnqueuePass(m_SimpleOutlinePass);
+        m_SimpleOutlinePass.m_OutlineMaterial = m_Material;
+        if (m_SimpleOutlinePass.m_OutlineMaterial == null)
+        {
+            return;
+        }
         m_SimpleOutlinePass.m_FilteringSettings.layerMask = m_LayerMask;
+        renderer.EnqueuePass(m_SimpleOutlinePass);
+
     }
 
     public override void Create()
@@ -35,52 +45,56 @@ public class SimpleOutlineFeature : ScriptableRendererFeature
 #if UNITY_EDITOR
         ResourceReloader.TryReloadAllNullIn(this, UniversalRenderPipelineAsset.packagePath);
 #endif
-        CreateMaterial();
         if (m_SimpleOutlinePass == null)
         {
             m_SimpleOutlinePass = new SimpleOutlinePass();
-            m_SimpleOutlinePass.m_OutlineMaterial = m_Material;
-            m_SimpleOutlinePass.renderPassEvent = RenderPassEvent.AfterRenderingOpaques;
-            m_SimpleOutlinePass.m_FilteringSettings = new FilteringSettings(RenderQueueRange.opaque, m_LayerMask);
         }
+        CreateMaterial();
+        m_SimpleOutlinePass.renderPassEvent = RenderPassEvent.AfterRenderingOpaques;
+        m_SimpleOutlinePass.m_FilteringSettings = new FilteringSettings(RenderQueueRange.opaque, m_LayerMask);
     }
 
     protected override void Dispose(bool disposing)
     {
         m_SimpleOutlinePass = null;
-        //CoreUtils.Destroy(m_Material);
+        CoreUtils.Destroy(m_Material);
     }
 
-    private void CreateMaterial()
+    private bool CreateMaterial()
     {
-        if (m_Material == null && m_Shader != null)
+        if (m_Material != null)
         {
-            m_Material = CoreUtils.CreateEngineMaterial(m_Shader);
-            m_Material.EnableKeyword("ENABLE_VS_SKINNING");
+            return true;
         }
+        if (m_Shader == null)
+        {
+            if (m_Shader == null)
+            {
+                return false;
+            }
+        }
+        m_Material = CoreUtils.CreateEngineMaterial(m_Shader);
+        m_Material.EnableKeyword("ENABLE_VS_SKINNING");
+        return m_Material != null;
     }
 
     private class SimpleOutlinePass : ScriptableRenderPass
     {
         internal Material m_OutlineMaterial;
         internal FilteringSettings m_FilteringSettings;
+        private static string m_ProfilerTag = "SimpleOutline Pass";
+        private static ProfilingSampler m_ProfilingSampler = new ProfilingSampler(m_ProfilerTag);
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
             var cmd = renderingData.commandBuffer;
             DrawingSettings drawingSettings = RenderingUtils.CreateDrawingSettings(new ShaderTagId("UniversalForward"), ref renderingData, SortingCriteria.CommonOpaque);
             drawingSettings.overrideMaterial = m_OutlineMaterial;
-            if (drawingSettings.overrideMaterial == null)
-            {
-                Debug.LogError("simple outline material is not ready");
-                return;
-            }
-            using (new ProfilingScope(cmd, new ProfilingSampler("SimpleOutline Pass")))
+            using (new ProfilingScope(cmd, m_ProfilingSampler))
             {
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
                 context.DrawRenderers(renderingData.cullResults, ref drawingSettings, ref m_FilteringSettings);
             }
-
         }
     }
 
