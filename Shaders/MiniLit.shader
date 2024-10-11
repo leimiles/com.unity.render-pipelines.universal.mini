@@ -10,7 +10,6 @@ Shader "SoFunny/Mini/MiniLit"
         [NoScaleOffset] _MAREConfig ("MARE Configure", Vector) = (1, 1, 1, 1)
         [HDR]_EmissionColor ("Emission Color", Color) = (0, 0, 0, 0)
         _ST ("Scale And Offset", Vector) = (1, 1, 0, 0)
-        [Toggle(_ADDITIONAL_LIGHTS)] _AddLightOn ("Additional Light On", Float) = 0
     }
 
     SubShader
@@ -22,19 +21,16 @@ Shader "SoFunny/Mini/MiniLit"
             Tags { "LightMode" = "UniversalForward" }
 
             HLSLPROGRAM
-            #pragma target 2.0
             #include "MiniInput.hlsl"
             #include "MiniLighting.hlsl"
 
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
             #pragma multi_compile _ LIGHTMAP_ON
-            #pragma multi_compile _ Debug_Albedo Debug_Normal Debug_Metallic Debug_AO Debug_Roughness Debug_Emission Debug_Light Debug_BakedGI
+            #pragma shader_feature _ Debug_Albedo Debug_Normal Debug_Metallic Debug_AO Debug_Roughness Debug_Emission Debug_Light Debug_BakedGI
 
-            #pragma multi_compile_fragment _ _SHADOWS_SOFT
+            #pragma multi_compile_fragment _SHADOWS_SOFT
             #pragma multi_compile _ ENABLE_VS_SKINNING
 
-            #pragma shader_feature_local _ADDITIONAL_LIGHTS
-            
             #pragma vertex vert
             #pragma fragment frag
 
@@ -88,8 +84,7 @@ Shader "SoFunny/Mini/MiniLit"
                 inputData.shadowCoord = TransformWorldToShadowCoord(inputData.positionWS);      // just because we only need shadow cascade situation
 
                 //inputData.fogCoord = 0; //    no need for now
-                //inputData.vertexLighting = input.vertexLight;  //    no need for now
-                
+                //inputData.vertexLighting = 0    // no need for now
                 #if defined(LIGHTMAP_ON)
                     inputData.bakedGI = SampleLightmap(input.uv0uv1.zw, 0, inputData.normalWS);
                 #else
@@ -121,7 +116,6 @@ Shader "SoFunny/Mini/MiniLit"
                 #if defined(LIGHTMAP_ON)
                     o.uv0uv1.zw = v.texcoord1 * unity_LightmapST.xy + unity_LightmapST.zw;
                 #endif
-                
                 return o;
             }
 
@@ -138,16 +132,27 @@ Shader "SoFunny/Mini/MiniLit"
                 //half ndotv = max(dot(inputData.normalWS, inputData.viewDirectionWS), 0.0);    // I need to fix this
                 half ndotv = 0.5h;
 
+                Light light = GetMainLight(inputData.shadowCoord, inputData.positionWS, half4(1, 1, 1, 1));
+
                 inputData.bakedGI *= miniSurfaceData.metalic_occlusion_roughness_emissionMask.g;
                 #if defined(LIGHTMAP_ON)
                     inputData.bakedGI = SubtractDirectMainLightFromLightmap(light, inputData.normalWS, inputData.bakedGI);
                 #endif
 
-                half3 finalColor = MiniLightingGeneral(
-                    inputData, miniSurfaceData, 1.0h - miniSurfaceData.metalic_occlusion_roughness_emissionMask.r, // because of white texture input by default
+                half3 diffuse;
+                half3 specular;
+                MiniLightingGeneral(
+                    inputData.normalWS,
+                    light.direction,
+                    inputData.viewDirectionWS,
+                    light.color,
+                    1.0h - miniSurfaceData.metalic_occlusion_roughness_emissionMask.r, // because of white texture input by default
                     miniSurfaceData.metalic_occlusion_roughness_emissionMask.b,
-                    ndotv);
-                    
+                    ndotv,
+                    diffuse,
+                    specular);
+
+                half3 finalColor = (diffuse.rgb * light.shadowAttenuation + inputData.bakedGI) * miniSurfaceData.albedo + specular.rgb ;
                 finalColor += miniSurfaceData.metalic_occlusion_roughness_emissionMask.a * _EmissionColor.rgb;
 
                 #if defined(Debug_Albedo)
@@ -162,8 +167,8 @@ Shader "SoFunny/Mini/MiniLit"
                     return half4(miniSurfaceData.metalic_occlusion_roughness_emissionMask.b, miniSurfaceData.metalic_occlusion_roughness_emissionMask.b, miniSurfaceData.metalic_occlusion_roughness_emissionMask.b, 1);
                 #elif defined(Debug_Emission)
                     return half4(miniSurfaceData.metalic_occlusion_roughness_emissionMask.a * _EmissionColor.rgb, 1);
-                // #elif defined(Debug_Light)
-                //     return half4(light.color, 1);
+                #elif defined(Debug_Light)
+                    return half4(light.color, 1);
                 #elif defined(Debug_BakedGI)
                     return half4(inputData.bakedGI, 1);
                 #endif
