@@ -21,18 +21,22 @@ Shader "SoFunny/Mini/MiniLit"
             Tags { "LightMode" = "UniversalForward" }
 
             HLSLPROGRAM
+            #pragma target 2.0
             #include "MiniInput.hlsl"
             #include "MiniLighting.hlsl"
 
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
-            #pragma multi_compile _ LIGHTMAP_ON
             #pragma shader_feature _ Debug_Albedo Debug_Normal Debug_Metallic Debug_AO Debug_Roughness Debug_Emission Debug_Light Debug_BakedGI
 
             #pragma multi_compile_fragment _SHADOWS_SOFT
             #pragma multi_compile _ ENABLE_VS_SKINNING
 
+            #pragma multi_compile _ LIGHTMAP_ON
+            #pragma multi_compile _ DIRLIGHTMAP_COMBINED
+
             #pragma vertex vert
             #pragma fragment frag
+
 
             struct Attributes
             {
