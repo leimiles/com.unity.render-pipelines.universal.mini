@@ -72,6 +72,8 @@ issues: 关闭 additonal light cookie 以及 additional light shadow map
 #1011
 issues: 对 renderer data 的设置导致 rt 数量翻倍的 bug
 - 检查 color attachement 也同样会在 bug 出现时翻倍
+- 为 data 属性赋值时触发 SetDirty() 操作，导致 universalrenderer  持续重复创建，逻辑 bug
+- Done
 
 issues: simple outline feature 会产生 gc
 - 检查材质资源创建
