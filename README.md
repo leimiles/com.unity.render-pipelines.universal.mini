@@ -86,9 +86,11 @@ issues: 添加 internal scope 之外控制渲染管线的接口 MiniRPController
 
 issues: 添加用于渲染面片阴影的 shader
 - 已提交合并
+- Done
 
 issues: 添加基础卡通渲染 shader
 - 交给了 YN 开发中
+
 ```
 
 
