@@ -29,6 +29,7 @@ issue: 删除关于 empty shadow 分配和 configure empty shadow target 的功�
 issue: 修复 js 关于 no valid shadow casters 的报错
 - 在关闭实时 additional light map 之后，已经没有这个报错了
 - Android 真机上依旧有报错
+- 动态阴影投射在静态 lightmap 对象上时会报错
 
 issue: 让 minilit shader 支持 additionallight 烘焙
 - 未完成，但是如果想用点光源烘焙的结果，可以使用 urp 的 simple lit
@@ -90,6 +91,9 @@ issues: 添加用于渲染面片阴影的 shader
 
 issues: 添加基础卡通渲染 shader
 - 交给了 YN 开发中
+
+issues: 打包到真机上 lightmapping 丢失
+- miniLit 的问题，simpleLit 正常
 
 ```
 
