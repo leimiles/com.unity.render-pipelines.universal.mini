@@ -77,6 +77,10 @@ issues: simple outline feature 会产生 gc
 - 检查材质资源创建
 - 检查 profiler tag 字符
 - Done
+
+issues: 添加 internal scope 之外控制渲染管线的接口 MiniRPController
+- 通过静态类 MiniRPController 来调用
+- Done
 ```
 
 
