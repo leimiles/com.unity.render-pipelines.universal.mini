@@ -1,4 +1,4 @@
-Shader "SoFunny/Mini/QuadShadows"
+Shader "SoFunny/Mini/MiniQuadShadows"
 {
     Properties
     {
@@ -8,18 +8,12 @@ Shader "SoFunny/Mini/QuadShadows"
 
     SubShader
     {
-        Tags
-        {
-            "Queue" = "Transparent-10" "IgnoreProjector" = "True" "RenderType" = "Transparent" "PreviewType" = "Plane"
-        }
-        
+        Tags { "Queue" = "Transparent-10" "IgnoreProjector" = "True" "RenderType" = "Transparent" "PreviewType" = "Plane" }
+
         Pass
         {
             Name "QuadShadows"
-            Tags
-            {
-                "LightMode" = "UniversalForward"
-            }
+            Tags { "LightMode" = "UniversalForward" }
 
             Lighting Off ZWrite Off
 
@@ -41,16 +35,16 @@ Shader "SoFunny/Mini/QuadShadows"
 
             struct appdata_t
             {
-                float4 vertex: POSITION;
-                float2 texcoord: TEXCOORD0;
+                float4 vertex : POSITION;
+                float2 texcoord : TEXCOORD0;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct v2f
             {
-                float4 vertex: SV_POSITION;
-                float2 texcoord: TEXCOORD0;
-                float3 positionWS: TEXCOORD1;
+                float4 vertex : SV_POSITION;
+                float2 texcoord : TEXCOORD0;
+                float3 positionWS : TEXCOORD1;
                 UNITY_VERTEX_OUTPUT_STEREO
             };
 
@@ -66,7 +60,7 @@ Shader "SoFunny/Mini/QuadShadows"
                 return o;
             }
 
-            half4 frag(v2f i): SV_Target
+            half4 frag(v2f i) : SV_Target
             {
                 half4 col = _TintColor * SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.texcoord);
                 return col;
