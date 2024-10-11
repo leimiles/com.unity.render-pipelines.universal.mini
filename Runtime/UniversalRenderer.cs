@@ -158,18 +158,7 @@ namespace UnityEngine.Rendering.Universal
         internal PostProcessPass finalPostProcessPass { get => m_PostProcessPasses.finalPostProcessPass; }
         internal RTHandle colorGradingLut { get => m_PostProcessPasses.colorGradingLut; }
         internal DeferredLights deferredLights { get => m_DeferredLights; }
-        void SetPipelineRendererDataSettingsForWX(UniversalRendererData data)
-        {
-            // following settings will cause multiple rt bug, to be fixed.
-            //data.renderingMode = RenderingMode.Forward;
-            //data.depthPrimingMode = DepthPrimingMode.Disabled;
-            //data.copyDepthMode = CopyDepthMode.AfterOpaques;
-            //data.useNativeRenderPass = false;
-            //data.shadowTransparentReceive = false;
-            //data.intermediateTextureMode = IntermediateTextureMode.Auto;
-            //data.accurateGbufferNormals = false;
-            data.postProcessData = null;
-        }
+
         /// <summary>
         /// Constructor for the Universal Renderer.
         /// </summary>
@@ -180,7 +169,6 @@ namespace UnityEngine.Rendering.Universal
             PlatformAutoDetect.Initialize();
 
 #if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
-            SetPipelineRendererDataSettingsForWX(data);
             MiniRPController.currentRendererData = data;
 #endif
 
