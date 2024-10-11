@@ -83,6 +83,9 @@ issues: simple outline feature 会产生 gc
 issues: 添加 internal scope 之外控制渲染管线的接口 MiniRPController
 - 通过静态类 MiniRPController 来调用
 - Done
+
+issues: 添加用于渲染面片阴影的 shader
+- 已提交合并
 ```
 
 
