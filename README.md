@@ -94,6 +94,11 @@ issues: 添加基础卡通渲染 shader
 
 issues: 打包到真机上 lightmapping 丢失
 - miniLit 的问题，simpleLit 正常
+- 添加丢失的 keyword
+- Done
+
+issues: 创建的的材质资源时，没有使用 miniLit
+- 检查 urp default shader
 
 ```
 
