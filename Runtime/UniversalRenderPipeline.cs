@@ -126,7 +126,11 @@ namespace UnityEngine.Rendering.Universal
         {
             // No support to bitfield mask and int[] in gles2. Can't index fast more than 4 lights.
             // Check Lighting.hlsl for more details.
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            get => 4;
+#else
             get => (SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES2) ? 4 : 8;
+#endif
         }
 
         // These limits have to match same limits in Input.hlsl
@@ -189,39 +193,6 @@ namespace UnityEngine.Rendering.Universal
         public override string ToString() => pipelineAsset?.ToString();
 
         /// <summary>
-        /// edited by zhulei, this is for wx performance
-        /// </summary>
-        /// <param name="asset"></param>
-        void SetPipelineAssetSettingsForWX(UniversalRenderPipelineAsset asset)
-        {
-            //asset.renderScale = 1.0f;     this will cause multiple depthattachment on webgl platform
-            asset.supportsCameraOpaqueTexture = false;
-            asset.supportsCameraDepthTexture = false;
-            asset.enableRenderGraph = false;
-            asset.supportsHDR = false;
-            asset.mainLightRenderingMode = LightRenderingMode.PerPixel;
-            if (asset.supportsSoftShadows)
-            {
-                asset.softShadowQuality = SoftShadowQuality.Low;
-            }
-            if (asset.shadowCascadeCount > 2)
-            {
-                asset.shadowCascadeCount = 2;
-            }
-            asset.mainLightShadowmapResolution = 1024;
-            if (asset.maxAdditionalLightsCount > 4)
-            {
-                asset.maxAdditionalLightsCount = 4;
-            }
-            asset.supportsAdditionalLightShadows = false;
-            // turn off light cookie
-            asset.colorGradingMode = ColorGradingMode.LowDynamicRange;
-            asset.msaaSampleCount = 1;
-            // to do more clipped feature
-
-        }
-
-        /// <summary>
         /// Creates a new <c>UniversalRenderPipeline</c> instance.
         /// </summary>
         /// <param name="asset">The <c>UniversalRenderPipelineAsset</c> asset to initialize the pipeline.</param>
@@ -229,7 +200,6 @@ namespace UnityEngine.Rendering.Universal
         public UniversalRenderPipeline(UniversalRenderPipelineAsset asset)
         {
 #if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
-            SetPipelineAssetSettingsForWX(asset);
             MiniRPController.currentAsset = asset;
 #endif
             pipelineAsset = asset;

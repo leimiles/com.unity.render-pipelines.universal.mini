@@ -509,13 +509,8 @@ namespace UnityEngine.Rendering.Universal
         [SerializeField] SoftShadowQuality m_SoftShadowQuality = SoftShadowQuality.Medium;
 
         // Light Cookie Settings
-#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
-        [SerializeField] LightCookieResolution m_AdditionalLightsCookieResolution = LightCookieResolution._256;
-        [SerializeField] LightCookieFormat m_AdditionalLightsCookieFormat = LightCookieFormat.GrayscaleLow;
-#else
         [SerializeField] LightCookieResolution m_AdditionalLightsCookieResolution = LightCookieResolution._2048;
         [SerializeField] LightCookieFormat m_AdditionalLightsCookieFormat = LightCookieFormat.ColorHigh;
-#endif
 
         // Advanced settings
         [SerializeField] bool m_UseSRPBatcher = true;
@@ -531,11 +526,7 @@ namespace UnityEngine.Rendering.Universal
         // multi_compile_fragment _ _LIGHT_COOKIES
         [ShaderKeywordFilter.RemoveIf(false, keywordNames: ShaderKeywordStrings.LightCookies)]
 #endif
-#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
-        [SerializeField] bool m_SupportsLightCookies = false;
-#else
         [SerializeField] bool m_SupportsLightCookies = true;
-#endif
 #if UNITY_EDITOR
         // multi_compile_fragment _ _LIGHT_LAYERS
         [ShaderKeywordFilter.ApplyRulesIfNotGraphicsAPI(GraphicsDeviceType.OpenGLES2)]
@@ -564,12 +555,7 @@ namespace UnityEngine.Rendering.Universal
         [SerializeField] int m_MaxPixelLights = 0;
         [SerializeField] ShadowResolution m_ShadowAtlasResolution = ShadowResolution._256;
 
-#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
-        [SerializeField] VolumeFrameworkUpdateMode m_VolumeFrameworkUpdateMode = VolumeFrameworkUpdateMode.ViaScripting;
-#else
         [SerializeField] VolumeFrameworkUpdateMode m_VolumeFrameworkUpdateMode = VolumeFrameworkUpdateMode.EveryFrame;
-#endif
-
 
         [SerializeField] TextureResources m_Textures;
 
@@ -588,7 +574,11 @@ namespace UnityEngine.Rendering.Universal
         public const int k_MaxLutSize = 65;
 
         internal const int k_ShadowCascadeMinCount = 1;
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+        internal const int k_ShadowCascadeMaxCount = 2;
+#else
         internal const int k_ShadowCascadeMaxCount = 4;
+#endif
 
         /// <summary>
         /// The default value of `additionalLightsShadowResolutionTierLow`.
@@ -975,9 +965,6 @@ namespace UnityEngine.Rendering.Universal
         {
             get
             {
-#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
-                m_AdditionalLightsCookieFormat = LightCookieFormat.GrayscaleLow;
-#endif
                 GraphicsFormat result = GraphicsFormat.None;
                 foreach (var format in s_LightCookieFormatList[(int)m_AdditionalLightsCookieFormat])
                 {
@@ -1002,11 +989,7 @@ namespace UnityEngine.Rendering.Universal
             }
         }
 
-#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
         internal Vector2Int additionalLightsCookieResolution => new Vector2Int((int)m_AdditionalLightsCookieResolution, (int)m_AdditionalLightsCookieResolution);
-#else
-        internal Vector2Int additionalLightsCookieResolution => new Vector2Int((int)m_AdditionalLightsCookieResolution, (int)m_AdditionalLightsCookieResolution);
-#endif
 
         internal int[] rendererIndexList
         {
@@ -1425,7 +1408,6 @@ namespace UnityEngine.Rendering.Universal
             {
                 m_SupportsLightCookies = false;
                 return m_SupportsLightCookies;
-
             }
 #else
             get { return m_SupportsLightCookies; }

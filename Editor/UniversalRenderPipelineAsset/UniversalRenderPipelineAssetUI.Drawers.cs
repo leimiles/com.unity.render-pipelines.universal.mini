@@ -133,11 +133,20 @@ namespace UnityEditor.Rendering.Universal
                     EditorGUILayout.HelpBox(Styles.rendererUnsupportedAPIMessage.text + unsupportedGraphicsApisMessage, MessageType.Warning, true);
 
                 EditorGUILayout.PropertyField(serialized.requireDepthTextureProp, Styles.requireDepthTextureText);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+                serialized.requireDepthTextureProp.boolValue = false;
+#endif
                 EditorGUILayout.PropertyField(serialized.requireOpaqueTextureProp, Styles.requireOpaqueTextureText);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+                serialized.requireOpaqueTextureProp.boolValue = false;
+#endif
                 EditorGUI.BeginDisabledGroup(!serialized.requireOpaqueTextureProp.boolValue);
                 EditorGUILayout.PropertyField(serialized.opaqueDownsamplingProp, Styles.opaqueDownsamplingText);
                 EditorGUI.EndDisabledGroup();
                 EditorGUILayout.PropertyField(serialized.supportsTerrainHolesProp, Styles.supportsTerrainHolesText);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+                serialized.supportsTerrainHolesProp.boolValue = false;
+#endif
             }
         }
 
@@ -157,8 +166,14 @@ namespace UnityEditor.Rendering.Universal
             DrawHDR(serialized, ownerEditor);
 
             EditorGUILayout.PropertyField(serialized.msaa, Styles.msaaText);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            serialized.msaa.intValue = 1;
+#endif
             serialized.renderScale.floatValue = EditorGUILayout.Slider(Styles.renderScaleText, serialized.renderScale.floatValue, UniversalRenderPipeline.minRenderScale, UniversalRenderPipeline.maxRenderScale);
             EditorGUILayout.PropertyField(serialized.upscalingFilter, Styles.upscalingFilterText);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            serialized.upscalingFilter.intValue = 2;
+#endif
             if (serialized.asset.upscalingFilter == UpscalingFilterSelection.FSR)
             {
                 ++EditorGUI.indentLevel;
@@ -174,6 +189,9 @@ namespace UnityEditor.Rendering.Universal
                 --EditorGUI.indentLevel;
             }
             EditorGUILayout.PropertyField(serialized.enableLODCrossFadeProp, Styles.enableLODCrossFadeText);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            serialized.enableLODCrossFadeProp.boolValue = false;
+#endif
             EditorGUI.BeginDisabledGroup(!serialized.enableLODCrossFadeProp.boolValue);
             EditorGUILayout.PropertyField(serialized.lodCrossFadeDitheringTypeProp, Styles.lodCrossFadeDitheringTypeText);
             if (!ValidateCrossFadeDitheringTextures(serialized.asset))
@@ -186,6 +204,9 @@ namespace UnityEditor.Rendering.Universal
         {
             EditorGUILayout.PropertyField(serialized.hdr, Styles.hdrText);
 
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            serialized.hdr.boolValue = false;
+#endif
             // Nested and in-between additional property
             bool additionalProperties = k_ExpandedState[Expandable.Quality] && k_AdditionalPropertiesState[ExpandableAdditional.Quality];
             if (serialized.hdr.boolValue && additionalProperties)
@@ -214,6 +235,13 @@ namespace UnityEditor.Rendering.Universal
             disableGroup |= !serialized.mainLightShadowsSupportedProp.boolValue;
             EditorGUI.BeginDisabledGroup(disableGroup);
             EditorGUILayout.PropertyField(serialized.mainLightShadowmapResolutionProp, Styles.mainLightShadowmapResolutionText);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            if(serialized.mainLightShadowmapResolutionProp.intValue > 1024)
+            {
+                serialized.mainLightShadowmapResolutionProp.intValue = 1024;
+            }
+
+#endif
             EditorGUI.EndDisabledGroup();
 
             EditorGUI.indentLevel--;
@@ -221,6 +249,12 @@ namespace UnityEditor.Rendering.Universal
 
             // Additional light
             EditorGUILayout.PropertyField(serialized.additionalLightsRenderingModeProp, Styles.addditionalLightsRenderingModeText);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            if (serialized.additionalLightsRenderingModeProp.intValue == 2)
+            {
+                serialized.additionalLightsRenderingModeProp.intValue = 0;
+            }
+#endif
             EditorGUI.indentLevel++;
 
             disableGroup = serialized.additionalLightsRenderingModeProp.intValue == (int)LightRenderingMode.Disabled;
@@ -231,11 +265,18 @@ namespace UnityEditor.Rendering.Universal
             disableGroup |= (serialized.additionalLightsPerObjectLimitProp.intValue == 0 || serialized.additionalLightsRenderingModeProp.intValue != (int)LightRenderingMode.PerPixel);
             EditorGUI.BeginDisabledGroup(disableGroup);
             EditorGUILayout.PropertyField(serialized.additionalLightShadowsSupportedProp, Styles.supportsAdditionalShadowsText);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            serialized.additionalLightShadowsSupportedProp.boolValue = false;
+#endif
+
             EditorGUI.EndDisabledGroup();
 
             disableGroup |= !serialized.additionalLightShadowsSupportedProp.boolValue;
             EditorGUI.BeginDisabledGroup(disableGroup);
             EditorGUILayout.PropertyField(serialized.additionalLightShadowmapResolutionProp, Styles.additionalLightsShadowmapResolution);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            serialized.additionalLightShadowmapResolutionProp.intValue = 256;
+#endif
             DrawShadowResolutionTierSettings(serialized, ownerEditor);
             EditorGUI.EndDisabledGroup();
 
@@ -244,10 +285,16 @@ namespace UnityEditor.Rendering.Universal
 
             EditorGUI.BeginDisabledGroup(disableGroup);
             EditorGUILayout.PropertyField(serialized.additionalLightCookieResolutionProp, Styles.additionalLightsCookieResolution);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            serialized.additionalLightCookieResolutionProp.intValue = 256;
+#endif
             EditorGUI.EndDisabledGroup();
 
             EditorGUI.BeginDisabledGroup(disableGroup);
             EditorGUILayout.PropertyField(serialized.additionalLightCookieFormatProp, Styles.additionalLightsCookieFormat);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            serialized.additionalLightCookieFormatProp.intValue = 0;
+#endif
             EditorGUI.EndDisabledGroup();
 
             EditorGUI.indentLevel--;
@@ -375,13 +422,20 @@ namespace UnityEditor.Rendering.Universal
             int selectedAssetSoftShadowQuality = serialized.softShadowQualityProp.intValue;
             Rect r = EditorGUILayout.GetControlRect(true);
             EditorGUI.BeginProperty(r, Styles.softShadowsQuality, serialized.softShadowQualityProp);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            serialized.softShadowQualityProp.intValue = 1;
+#endif
             {
                 using (var checkScope = new EditorGUI.ChangeCheckScope())
                 {
                     selectedAssetSoftShadowQuality = EditorGUI.IntPopup(r, Styles.softShadowsQuality, selectedAssetSoftShadowQuality, Styles.softShadowsQualityAssetOptions, Styles.softShadowsQualityAssetValues);
                     if (checkScope.changed)
                     {
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+                        serialized.softShadowQualityProp.intValue = 1;
+#else
                         serialized.softShadowQualityProp.intValue = Math.Clamp(selectedAssetSoftShadowQuality, (int)SoftShadowQuality.Low, (int)SoftShadowQuality.High);
+#endif
                     }
                 }
             }
@@ -540,6 +594,9 @@ namespace UnityEditor.Rendering.Universal
         static void DrawPostProcessing(SerializedUniversalRenderPipelineAsset serialized, Editor ownerEditor)
         {
             EditorGUILayout.PropertyField(serialized.colorGradingMode, Styles.colorGradingMode);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            serialized.colorGradingMode.intValue = 0;
+#endif
             bool isHdrOn = serialized.hdr.boolValue;
             if (!isHdrOn && serialized.colorGradingMode.intValue == (int)ColorGradingMode.HighDynamicRange)
                 EditorGUILayout.HelpBox(Styles.colorGradingModeWarning, MessageType.Warning);
@@ -548,13 +605,21 @@ namespace UnityEditor.Rendering.Universal
             else if (isHdrOn && PlayerSettings.useHDRDisplay && serialized.colorGradingMode.intValue == (int)ColorGradingMode.LowDynamicRange)
                 EditorGUILayout.HelpBox(Styles.colorGradingModeWithHDROutput, MessageType.Warning);
 
+            EditorGUI.BeginDisabledGroup(true);
             EditorGUILayout.DelayedIntField(serialized.colorGradingLutSize, Styles.colorGradingLutSize);
+            EditorGUI.EndDisabledGroup();
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            serialized.colorGradingLutSize.intValue = 16;
+#endif
             serialized.colorGradingLutSize.intValue = Mathf.Clamp(serialized.colorGradingLutSize.intValue, UniversalRenderPipelineAsset.k_MinLutSize, UniversalRenderPipelineAsset.k_MaxLutSize);
             if (isHdrOn && serialized.colorGradingMode.intValue == (int)ColorGradingMode.HighDynamicRange && serialized.colorGradingLutSize.intValue < 32)
                 EditorGUILayout.HelpBox(Styles.colorGradingLutSizeWarning, MessageType.Warning);
 
             EditorGUILayout.PropertyField(serialized.useFastSRGBLinearConversion, Styles.useFastSRGBLinearConversion);
             CoreEditorUtils.DrawPopup(Styles.volumeFrameworkUpdateMode, serialized.volumeFrameworkUpdateModeProp, Styles.volumeFrameworkUpdateOptions);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            serialized.volumeFrameworkUpdateModeProp.intValue = 1;
+#endif
         }
 
 #if ADAPTIVE_PERFORMANCE_2_0_0_OR_NEWER
