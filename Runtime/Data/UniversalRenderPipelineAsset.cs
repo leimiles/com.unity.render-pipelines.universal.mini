@@ -1631,17 +1631,20 @@ namespace UnityEngine.Rendering.Universal
                         return defaultShader;
                 }
 
-                if (m_DefaultShader == null)
+                if (m_DefaultShader == null || m_DefaultShader.name != "SoFunny/Mini/MiniLit")
                 {
+
                     string path = AssetDatabase.GUIDToAssetPath(ShaderUtils.GetShaderGUID(ShaderPathID.Lit));
                     m_DefaultShader  = AssetDatabase.LoadAssetAtPath<Shader>(path);
                 }
 #endif
 
                 if (m_DefaultShader == null)
+                {
+                    Debug.Log("set by find");
                     m_DefaultShader = Shader.Find(ShaderUtils.GetShaderPath(ShaderPathID.Lit));
+                }
 
-                Debug.Log(m_DefaultShader.name + " - " + ShaderUtils.GetShaderGUID(ShaderPathID.Lit));
                 return m_DefaultShader;
             }
         }
