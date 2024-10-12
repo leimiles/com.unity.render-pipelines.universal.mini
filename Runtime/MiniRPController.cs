@@ -29,7 +29,6 @@ public static class MiniRPController
         if (currentRendererData != null)
         {
             currentRendererData.renderingMode = (RenderingMode)(m_RenderingMode);
-            Debug.Log((int)currentRendererData.renderingMode);
             m_RenderingMode++;
             if (m_RenderingMode > 2)
             {
