@@ -51,6 +51,7 @@ issues: 通过 camera data 来关闭 post process
 issues: mini rp 的 minilit 还是需要支持实时点光源功能
 - 交给了 YN 开发中
 - 已提交合并
+- Done
 
 #1009
 issues: 添加简单 outline feature
@@ -99,6 +100,10 @@ issues: 打包到真机上 lightmapping 丢失
 
 issues: 创建的的材质资源时，没有使用 miniLit
 - 检查 urp default shader
+- Done
+
+issues: 剔除不会用到的内置材质
+- 检查 asset 和 rendererdata 的 shader
 
 ```
 
