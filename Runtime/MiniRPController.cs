@@ -23,6 +23,7 @@ public static class MiniRPController
         }
     }
 
+    /*
     static int m_RenderingMode = 0;
     public static void DebugRenderingPath()
     {
@@ -36,4 +37,5 @@ public static class MiniRPController
             }
         }
     }
+    */
 }
