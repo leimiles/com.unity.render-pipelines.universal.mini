@@ -37,7 +37,7 @@ Shader "SoFunny/Mini/MiniLit"
             #pragma multi_compile _ DIRLIGHTMAP_COMBINED
 
             #pragma vertex vert
-            #pragma fragment frag2
+            #pragma fragment frag
 
 
             struct Attributes
@@ -126,62 +126,6 @@ Shader "SoFunny/Mini/MiniLit"
             }
 
             half4 frag(Varyings i) : SV_Target
-            {
-                UNITY_SETUP_INSTANCE_ID(i);
-
-                MiniSurfaceData miniSurfaceData;
-                InitializeMiniSurfaceData(i.uv0uv1.xy, miniSurfaceData);
-
-                InputData inputData;
-                InitializeInputData(i, miniSurfaceData.normalTS, inputData);
-
-                //half ndotv = max(dot(inputData.normalWS, inputData.viewDirectionWS), 0.0);    // I need to fix this
-                half ndotv = 0.5h;
-
-                Light light = GetMainLight(inputData.shadowCoord, inputData.positionWS, half4(1, 1, 1, 1));
-
-                inputData.bakedGI *= miniSurfaceData.metalic_occlusion_roughness_emissionMask.g;
-                #if defined(LIGHTMAP_ON)
-                    inputData.bakedGI = SubtractDirectMainLightFromLightmap(light, inputData.normalWS, inputData.bakedGI);
-                #endif
-
-                half3 diffuse;
-                half3 specular;
-                MiniLightingGeneral(
-                    inputData.normalWS,
-                    light.direction,
-                    inputData.viewDirectionWS,
-                    light.color,
-                    1.0h - miniSurfaceData.metalic_occlusion_roughness_emissionMask.r, // because of white texture input by default
-                    miniSurfaceData.metalic_occlusion_roughness_emissionMask.b,
-                    ndotv,
-                    diffuse,
-                    specular);
-
-                half3 finalColor = (diffuse.rgb * light.shadowAttenuation + inputData.bakedGI) * miniSurfaceData.albedo + specular.rgb ;
-                finalColor += miniSurfaceData.metalic_occlusion_roughness_emissionMask.a * _EmissionColor.rgb;
-
-                #if defined(Debug_Albedo)
-                    return half4(miniSurfaceData.albedo, 1);
-                #elif defined(Debug_Normal)
-                    return half4(inputData.normalWS * 0.5h + 0.5h, 1);
-                #elif defined(Debug_Metallic)
-                    return half4(miniSurfaceData.metalic_occlusion_roughness_emissionMask.r, miniSurfaceData.metalic_occlusion_roughness_emissionMask.r, miniSurfaceData.metalic_occlusion_roughness_emissionMask.r, 1);
-                #elif defined(Debug_AO)
-                    return half4(miniSurfaceData.metalic_occlusion_roughness_emissionMask.g, miniSurfaceData.metalic_occlusion_roughness_emissionMask.g, miniSurfaceData.metalic_occlusion_roughness_emissionMask.g, 1);
-                #elif defined(Debug_Roughness)
-                    return half4(miniSurfaceData.metalic_occlusion_roughness_emissionMask.b, miniSurfaceData.metalic_occlusion_roughness_emissionMask.b, miniSurfaceData.metalic_occlusion_roughness_emissionMask.b, 1);
-                #elif defined(Debug_Emission)
-                    return half4(miniSurfaceData.metalic_occlusion_roughness_emissionMask.a * _EmissionColor.rgb, 1);
-                #elif defined(Debug_Light)
-                    return half4(light.color, 1);
-                #elif defined(Debug_BakedGI)
-                    return half4(inputData.bakedGI, 1);
-                #endif
-
-                return half4(finalColor, 1.0h);
-            }
-            half4 frag2(Varyings i) : SV_Target
             {
                 UNITY_SETUP_INSTANCE_ID(i);
 
