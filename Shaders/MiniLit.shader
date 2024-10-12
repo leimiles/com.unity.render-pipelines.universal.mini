@@ -93,8 +93,8 @@ Shader "SoFunny/Mini/MiniLit"
                     inputData.bakedGI = SampleLightmap(input.uv0uv1.zw, 0, inputData.normalWS);
                 #else
                     inputData.bakedGI = SampleSHPixel(input.sh_tangentSign.xyz, inputData.normalWS);
-                    inputData.bakedGI = LinearToSRGB(inputData.bakedGI);        // only for minirp
                 #endif
+                inputData.bakedGI = LinearToSRGB(inputData.bakedGI);        // only for minirp
                 //inputData.normalizedScreenSpaceUV = 0;  // no need for now
                 //inputData.shadowMask = 0;    // no need for now
 
