@@ -213,6 +213,9 @@ namespace UnityEditor.Rendering.Universal
                     int selectedValue = (int)(AntialiasingMode)EditorGUI.EnumPopup(antiAliasingRect, Styles.antialiasing, (AntialiasingMode)p.antialiasing.intValue);
                     if (EditorGUI.EndChangeCheck())
                         p.antialiasing.intValue = selectedValue;
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+                    p.antialiasing.intValue = 0;
+#endif
                 }
                 EditorGUI.EndProperty();
             }
@@ -280,6 +283,13 @@ namespace UnityEditor.Rendering.Universal
             static void DrawerRenderingRenderPostProcessing(UniversalRenderPipelineSerializedCamera p, Editor owner)
             {
                 EditorGUILayout.PropertyField(p.renderPostProcessing, Styles.renderPostProcessing);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+                if (MiniRPController.currentRendererData != null && MiniRPController.currentRendererData.postProcessData == null)
+                {
+                    p.renderPostProcessing.boolValue = false;
+                }
+                p.renderPostProcessing.boolValue = false;
+#endif
             }
 
             static void DrawerRenderingPriority(UniversalRenderPipelineSerializedCamera p, Editor owner)
@@ -290,11 +300,17 @@ namespace UnityEditor.Rendering.Universal
             static void DrawerRenderingDepthTexture(UniversalRenderPipelineSerializedCamera p, Editor owner)
             {
                 EditorGUILayout.PropertyField(p.renderDepth, Styles.requireDepthTexture);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+                p.renderDepth.intValue = 2;
+#endif
             }
 
             static void DrawerRenderingOpaqueTexture(UniversalRenderPipelineSerializedCamera p, Editor owner)
             {
                 EditorGUILayout.PropertyField(p.renderOpaque, Styles.requireOpaqueTexture);
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+                p.renderOpaque.intValue = 2;
+#endif
             }
         }
     }
