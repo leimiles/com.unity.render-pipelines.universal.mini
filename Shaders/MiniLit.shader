@@ -10,6 +10,7 @@ Shader "SoFunny/Mini/MiniLit"
         [NoScaleOffset] _MAREConfig ("MARE Configure", Vector) = (1, 1, 1, 1)
         [HDR]_EmissionColor ("Emission Color", Color) = (0, 0, 0, 0)
         _ST ("Scale And Offset", Vector) = (1, 1, 0, 0)
+        [Toggle(_ADDITIONAL_LIGHTS)] _AddLightOn ("Additional Light On", Float) = 0
     }
 
     SubShader
@@ -26,6 +27,7 @@ Shader "SoFunny/Mini/MiniLit"
             #include "MiniLighting.hlsl"
 
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma shader_feature_local _ADDITIONAL_LIGHTS
             #pragma shader_feature _ Debug_Albedo Debug_Normal Debug_Metallic Debug_AO Debug_Roughness Debug_Emission Debug_Light Debug_BakedGI
 
             #pragma multi_compile_fragment _SHADOWS_SOFT
@@ -35,7 +37,7 @@ Shader "SoFunny/Mini/MiniLit"
             #pragma multi_compile _ DIRLIGHTMAP_COMBINED
 
             #pragma vertex vert
-            #pragma fragment frag
+            #pragma fragment frag2
 
 
             struct Attributes
@@ -157,6 +159,59 @@ Shader "SoFunny/Mini/MiniLit"
                     specular);
 
                 half3 finalColor = (diffuse.rgb * light.shadowAttenuation + inputData.bakedGI) * miniSurfaceData.albedo + specular.rgb ;
+                finalColor += miniSurfaceData.metalic_occlusion_roughness_emissionMask.a * _EmissionColor.rgb;
+
+                #if defined(Debug_Albedo)
+                    return half4(miniSurfaceData.albedo, 1);
+                #elif defined(Debug_Normal)
+                    return half4(inputData.normalWS * 0.5h + 0.5h, 1);
+                #elif defined(Debug_Metallic)
+                    return half4(miniSurfaceData.metalic_occlusion_roughness_emissionMask.r, miniSurfaceData.metalic_occlusion_roughness_emissionMask.r, miniSurfaceData.metalic_occlusion_roughness_emissionMask.r, 1);
+                #elif defined(Debug_AO)
+                    return half4(miniSurfaceData.metalic_occlusion_roughness_emissionMask.g, miniSurfaceData.metalic_occlusion_roughness_emissionMask.g, miniSurfaceData.metalic_occlusion_roughness_emissionMask.g, 1);
+                #elif defined(Debug_Roughness)
+                    return half4(miniSurfaceData.metalic_occlusion_roughness_emissionMask.b, miniSurfaceData.metalic_occlusion_roughness_emissionMask.b, miniSurfaceData.metalic_occlusion_roughness_emissionMask.b, 1);
+                #elif defined(Debug_Emission)
+                    return half4(miniSurfaceData.metalic_occlusion_roughness_emissionMask.a * _EmissionColor.rgb, 1);
+                #elif defined(Debug_Light)
+                    return half4(light.color, 1);
+                #elif defined(Debug_BakedGI)
+                    return half4(inputData.bakedGI, 1);
+                #endif
+
+                return half4(finalColor, 1.0h);
+            }
+            half4 frag2(Varyings i) : SV_Target
+            {
+                UNITY_SETUP_INSTANCE_ID(i);
+
+                MiniSurfaceData miniSurfaceData;
+                InitializeMiniSurfaceData(i.uv0uv1.xy, miniSurfaceData);
+
+                InputData inputData;
+                InitializeInputData(i, miniSurfaceData.normalTS, inputData);
+
+                //half ndotv = max(dot(inputData.normalWS, inputData.viewDirectionWS), 0.0);    // I need to fix this
+                half ndotv = 0.5h;
+
+                Light light = GetMainLight(inputData.shadowCoord, inputData.positionWS, half4(1, 1, 1, 1));
+
+                inputData.bakedGI *= miniSurfaceData.metalic_occlusion_roughness_emissionMask.g;
+                #if defined(LIGHTMAP_ON)
+                    inputData.bakedGI = SubtractDirectMainLightFromLightmap(light, inputData.normalWS, inputData.bakedGI);
+                #endif
+
+                half3 diffuse;
+                half3 specular;
+                MiniLightingGeneralWithAdditionalLight(
+                    inputData,
+                    miniSurfaceData,
+                    light,
+                    ndotv,
+                    diffuse,
+                    specular);
+
+                half3 finalColor = (diffuse.rgb + inputData.bakedGI) * miniSurfaceData.albedo + specular.rgb ;
                 finalColor += miniSurfaceData.metalic_occlusion_roughness_emissionMask.a * _EmissionColor.rgb;
 
                 #if defined(Debug_Albedo)
