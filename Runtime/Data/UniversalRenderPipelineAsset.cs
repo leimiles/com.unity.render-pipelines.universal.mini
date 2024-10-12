@@ -1641,7 +1641,6 @@ namespace UnityEngine.Rendering.Universal
 
                 if (m_DefaultShader == null)
                 {
-                    Debug.Log("set by find");
                     m_DefaultShader = Shader.Find(ShaderUtils.GetShaderPath(ShaderPathID.Lit));
                 }
 
