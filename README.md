@@ -104,6 +104,8 @@ issues: 创建的的材质资源时，没有使用 miniLit
 
 issues: 剔除不会用到的内置材质
 - 检查 asset 和 rendererdata 的 shader
+- 移除 hdrdebugview
+- 移除 debug replacement
 
 issues: 新建场景会出现 finalblit
 - 检查管线初始化设置
