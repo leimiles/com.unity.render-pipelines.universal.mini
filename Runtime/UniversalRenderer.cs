@@ -169,7 +169,7 @@ namespace UnityEngine.Rendering.Universal
             PlatformAutoDetect.Initialize();
 
 #if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
-            MiniRPController.currentRendererData = data;
+            MiniRPController.CurrentRendererData = data;
 #endif
 
 #if ENABLE_VR && ENABLE_XR_MODULE && (!WX_PERFORMANCE_MODE || WX_PREVIEW_SCENE_MODE)

@@ -284,7 +284,7 @@ namespace UnityEditor.Rendering.Universal
             {
                 EditorGUILayout.PropertyField(p.renderPostProcessing, Styles.renderPostProcessing);
 #if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
-                if (MiniRPController.currentRendererData != null && MiniRPController.currentRendererData.postProcessData == null)
+                if (MiniRPController.CurrentRendererData != null && MiniRPController.CurrentRendererData.postProcessData == null)
                 {
                     p.renderPostProcessing.boolValue = false;
                 }

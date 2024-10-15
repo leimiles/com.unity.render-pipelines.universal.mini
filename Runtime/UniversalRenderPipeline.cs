@@ -200,7 +200,7 @@ namespace UnityEngine.Rendering.Universal
         public UniversalRenderPipeline(UniversalRenderPipelineAsset asset)
         {
 #if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
-            MiniRPController.currentAsset = asset;
+            MiniRPController.CurrentAsset = asset;
 #endif
             pipelineAsset = asset;
 #if UNITY_EDITOR

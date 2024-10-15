@@ -5,20 +5,34 @@ using UnityEngine.Rendering.Universal;
 
 public static class MiniRPController
 {
-    internal static UniversalRenderPipelineAsset currentAsset;
-    internal static UniversalRendererData currentRendererData;
+    private static UniversalRenderPipelineAsset currentAsset;
+    private static UniversalRendererData currentRendererData;
+
+    internal static UniversalRendererData CurrentRendererData
+    {
+        get => currentRendererData;
+        set
+        {
+            currentRendererData = value;
+#if (WX_PERFORMANCE_MODE || !WX_PREVIEW_SCENE_MODE)
+            currentRendererData.debugShaders.debugReplacementPS = null;
+            currentRendererData.debugShaders.hdrDebugViewPS = null;
+#endif
+        }
+    }
+    internal static UniversalRenderPipelineAsset CurrentAsset { get => currentAsset; set => currentAsset = value; }
 
     public static void DebugMainLightShadow()
     {
-        if (currentAsset != null)
+        if (CurrentAsset != null)
         {
-            if (currentAsset.supportsMainLightShadows == true)
+            if (CurrentAsset.supportsMainLightShadows == true)
             {
-                currentAsset.supportsMainLightShadows = false;
+                CurrentAsset.supportsMainLightShadows = false;
             }
             else
             {
-                currentAsset.supportsMainLightShadows = true;
+                CurrentAsset.supportsMainLightShadows = true;
             }
         }
     }
