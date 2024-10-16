@@ -27,10 +27,10 @@ Shader "SoFunny/Mini/MiniLit"
             #include "MiniLighting.hlsl"
 
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
-            #pragma shader_feature_local _ADDITIONAL_LIGHTS
+            #pragma shader_feature_local _ _ADDITIONAL_LIGHTS
             #pragma shader_feature _ Debug_Albedo Debug_Normal Debug_Metallic Debug_AO Debug_Roughness Debug_Emission Debug_Light Debug_BakedGI
 
-            #pragma multi_compile_fragment _SHADOWS_SOFT
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT
             #pragma multi_compile _ ENABLE_VS_SKINNING
 
             #pragma multi_compile _ LIGHTMAP_ON
