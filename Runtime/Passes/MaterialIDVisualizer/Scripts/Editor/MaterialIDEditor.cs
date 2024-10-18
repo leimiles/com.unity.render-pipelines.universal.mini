@@ -2,11 +2,11 @@ using UnityEditor;
 using UnityEngine;
 
 [InitializeOnLoad]
-public class MID
+public class MaterialIDEditor
 {
     static Vector2 buttonSize = new Vector2(100, 20);
     static Vector2 infoSize = new Vector2(300, 150);
-    static MID()
+    static MaterialIDEditor()
     {
         SceneView.duringSceneGui += OnSceneGUI;
     }
@@ -29,6 +29,7 @@ public class MID
         }
         if (GUI.Button(new Rect(Screen.width / 2 - buttonSize.x * 1 - buttonSize.x / 2, 0, buttonSize.x, buttonSize.y), "Material ID"))
         {
+            MaterialIDManager.SetColorIDsByMaterials();
             MiniRPController.DebugDraw(MiniRPController.DrawMode.MaterialID);
         }
         if (GUI.Button(new Rect(Screen.width / 2 - buttonSize.x / 2, 0, buttonSize.x, buttonSize.y), "Mesh ID"))

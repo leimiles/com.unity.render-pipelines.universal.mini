@@ -228,4 +228,56 @@ public class MIDManager
         return new Color(Random.Range(0.0f, 1.0f) * 0.5f + 0.5f, Random.Range(0.0f, 1.0f) * 0.5f + 0.5f, Random.Range(0.0f, 1.0f) * 0.5f + 0.5f);
     }
 
+    // new stuff 241018 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    static Renderer[] renderers;
+
+    static void SetRenders()
+    {
+        renderers = GameObject.FindObjectsOfType<Renderer>();
+        SetErrorMaterial();
+    }
+    static MaterialPropertyBlock materialPropertyBlock;
+    static Material errorMaterial;
+    static void SetErrorMaterial()
+    {
+        if (errorMaterial == null)
+        {
+            errorMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("Hidden/InternalErrorShader"));
+        }
+    }
+    public static void SetColorByMaterials()
+    {
+        SetRenders();
+        foreach (Renderer renderer in renderers)
+        {
+            for (int i = 0; i < renderer.sharedMaterials.Length; i++)
+            {
+                renderer.GetPropertyBlock(materialPropertyBlock, i);
+                materialPropertyBlock.SetColor(Shader.PropertyToID("_ColorID"), Color.yellow);
+                renderer.SetPropertyBlock(materialPropertyBlock, i);
+            }
+        }
+    }
+    /*
+    public static void SetColorByMaterials2()
+    {
+        if (renderers != null && renderers.Length > 0)
+        {
+            foreach (Renderer renderer in renderers)
+            {
+                //if (renderer == null) return;       // todo: check why render will be null even if renders is not
+                for (int i = 0; i < renderer.sharedMaterials.Length; i++)
+                {
+                    renderer.GetPropertyBlock(m_MaterialPropertyBlockData.materialPropertyBlock, i);
+                    // use the propertyName "_ColorID", because it's not often to see it in shaders
+                    m_MaterialPropertyBlockData.materialPropertyBlock.SetColor(Shader.PropertyToID("_ColorID"), MIDManager.GetColor(renderer.sharedMaterials[i] == null ? errorMaterial : renderer.sharedMaterials[i], renderer.gameObject));
+                    renderer.SetPropertyBlock(m_MaterialPropertyBlockData.materialPropertyBlock, i);
+                }
+            }
+        }
+
+    }
+    */
+
 }
