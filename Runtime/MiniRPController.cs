@@ -5,6 +5,15 @@ using UnityEngine.Rendering.Universal;
 
 public static class MiniRPController
 {
+    public static DrawMode CurrentDrawMode = DrawMode.Normal;
+    public enum DrawMode
+    {
+        Normal,
+        MaterialID,
+        MeshID,
+        ShaderID,
+        VariantID
+    }
     private static UniversalRenderPipelineAsset currentAsset;
     private static UniversalRendererData currentRendererData;
 
@@ -52,4 +61,9 @@ public static class MiniRPController
         }
     }
     */
+
+    public static void DebugDraw(DrawMode drawMode)
+    {
+        CurrentDrawMode = drawMode;
+    }
 }
