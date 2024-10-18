@@ -25,7 +25,14 @@ public static class MaterialIDManager
     public static void SetColorIDsByMaterials()
     {
         SetRenders();
-        /*
+        if (materialPropertyBlock != null)
+        {
+            materialPropertyBlock.Clear();
+        }
+        else
+        {
+            materialPropertyBlock = new MaterialPropertyBlock();
+        }
         foreach (Renderer renderer in renderers)
         {
             for (int i = 0; i < renderer.sharedMaterials.Length; i++)
@@ -35,6 +42,5 @@ public static class MaterialIDManager
                 renderer.SetPropertyBlock(materialPropertyBlock, i);
             }
         }
-        */
     }
 }

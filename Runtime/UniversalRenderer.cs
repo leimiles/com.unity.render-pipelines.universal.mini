@@ -38,13 +38,13 @@ namespace UnityEngine.Rendering.Universal
     /// </summary>
     public sealed partial class UniversalRenderer : ScriptableRenderer
     {
-        #if UNITY_SWITCH || UNITY_ANDROID || UNITY_OPENHARMONY || WX_PERFORMANCE_MODE
+#if UNITY_SWITCH || UNITY_ANDROID || UNITY_OPENHARMONY || WX_PERFORMANCE_MODE
         const GraphicsFormat k_DepthStencilFormat = GraphicsFormat.D24_UNorm_S8_UInt;
         const int k_DepthBufferBits = 24;
-        #else
+#else
         const GraphicsFormat k_DepthStencilFormat = GraphicsFormat.D32_SFloat_S8_UInt;
         const int k_DepthBufferBits = 32;
-        #endif
+#endif
 
         const int k_FinalBlitPassQueueOffset = 1;
         const int k_AfterFinalBlitPassQueueOffset = k_FinalBlitPassQueueOffset + 1;
@@ -89,6 +89,12 @@ namespace UnityEngine.Rendering.Universal
 #endif
         /// <summary>Property to control the depth priming behavior of the forward rendering path.</summary>
         public DepthPrimingMode depthPrimingMode { get { return m_DepthPrimingMode; } set { m_DepthPrimingMode = value; } }
+
+#if (WX_PERFORMANCE_MODE && UNITY_EDITOR)
+        MaterialIDPass m_MaterialIDPass;
+#endif
+
+
         DepthOnlyPass m_DepthPrepass;
         DepthNormalOnlyPass m_DepthNormalPrepass;
         CopyDepthPass m_PrimedDepthCopyPass;
@@ -245,6 +251,10 @@ namespace UnityEngine.Rendering.Universal
             m_DepthPrepass = new DepthOnlyPass(RenderPassEvent.BeforeRenderingPrePasses, RenderQueueRange.opaque, data.opaqueLayerMask);
             m_DepthNormalPrepass = new DepthNormalOnlyPass(RenderPassEvent.BeforeRenderingPrePasses, RenderQueueRange.opaque, data.opaqueLayerMask);
             m_MotionVectorPass = new MotionVectorRenderPass(m_CameraMotionVecMaterial, m_ObjectMotionVecMaterial);
+
+#if (WX_PERFORMANCE_MODE && UNITY_EDITOR)
+            m_MaterialIDPass = new MaterialIDPass();
+#endif
 
             if (renderingModeRequested == RenderingMode.Forward || renderingModeRequested == RenderingMode.ForwardPlus)
             {
@@ -436,29 +446,29 @@ namespace UnityEngine.Rendering.Universal
                     switch (fullScreenDebugMode)
                     {
                         case DebugFullScreenMode.Depth:
-                        {
-                            DebugHandler.SetDebugRenderTarget(m_DepthTexture.nameID, normalizedRect, true);
-                            break;
-                        }
+                            {
+                                DebugHandler.SetDebugRenderTarget(m_DepthTexture.nameID, normalizedRect, true);
+                                break;
+                            }
                         case DebugFullScreenMode.AdditionalLightsShadowMap:
-                        {
-                            DebugHandler.SetDebugRenderTarget(m_AdditionalLightsShadowCasterPass.m_AdditionalLightsShadowmapHandle, normalizedRect, false);
-                            break;
-                        }
+                            {
+                                DebugHandler.SetDebugRenderTarget(m_AdditionalLightsShadowCasterPass.m_AdditionalLightsShadowmapHandle, normalizedRect, false);
+                                break;
+                            }
                         case DebugFullScreenMode.MainLightShadowMap:
-                        {
-                            DebugHandler.SetDebugRenderTarget(m_MainLightShadowCasterPass.m_MainLightShadowmapTexture, normalizedRect, false);
-                            break;
-                        }
+                            {
+                                DebugHandler.SetDebugRenderTarget(m_MainLightShadowCasterPass.m_MainLightShadowmapTexture, normalizedRect, false);
+                                break;
+                            }
                         case DebugFullScreenMode.ReflectionProbeAtlas:
-                        {
-                            DebugHandler.SetDebugRenderTarget(m_ForwardLights.reflectionProbeManager.atlasRT, normalizedRect, false);
-                            break;
-                        }
+                            {
+                                DebugHandler.SetDebugRenderTarget(m_ForwardLights.reflectionProbeManager.atlasRT, normalizedRect, false);
+                                break;
+                            }
                         default:
-                        {
-                            break;
-                        }
+                            {
+                                break;
+                            }
                     }
                 }
                 else
@@ -480,7 +490,7 @@ namespace UnityEngine.Rendering.Universal
             // Enabled Depth priming when baking Reflection Probes causes artefacts (UUM-12397)
             bool isNotReflectionCamera = cameraData.cameraType != CameraType.Reflection;
 
-            return  depthPrimingRequested && isForwardRenderingMode && isFirstCameraToWriteDepth && isNotReflectionCamera;
+            return depthPrimingRequested && isForwardRenderingMode && isFirstCameraToWriteDepth && isNotReflectionCamera;
         }
 
         bool IsGLESDevice()
@@ -1120,6 +1130,15 @@ namespace UnityEngine.Rendering.Universal
                 EnqueuePass(m_RenderTransparentForwardPass);
             }
             EnqueuePass(m_OnRenderObjectCallbackPass);
+
+#if (WX_PERFORMANCE_MODE && UNITY_EDITOR)
+            if (cameraData.cameraType == CameraType.SceneView && MiniRPController.CurrentDrawMode != MiniRPController.DrawMode.Normal)
+            {
+                EnqueuePass(m_MaterialIDPass);
+            }
+
+#endif
+
 
             bool shouldRenderUI = cameraData.rendersOverlayUI;
             bool outputToHDR = cameraData.isHDROutputActive;
