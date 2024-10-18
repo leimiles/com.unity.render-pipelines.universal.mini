@@ -112,6 +112,9 @@ issues: 新建场景会出现 finalblit
 - 检查新建场景摄影 camera data
 - Done
 
+#1018
+issues: 新增材质 id 渲染模式
+
 ```
 
 

@@ -7,24 +7,21 @@ Shader "SoFunny/Utils/MaterialID"
 
     SubShader
     {
-        Tags { "RenderPipeline" = "UniversalPipeline" "RenderType" = "Overlay" "Queue" = "Overlay" }
+        Tags { "RenderPipeline" = "UniversalPipeline" "Queue" = "Geometry" "RenderType" = "Opaque" "IgnoreProjector" = "True" }
 
         Pass
         {
             Name "MID"
             Tags { "LightMode" = "UniversalForward" }
 
-            //Blend One One
-            //BlendOp Add
             HLSLPROGRAM
-            #pragma target 4.5
-            #pragma multi_compile _ DOTS_INSTANCING_ON
-
+            #pragma target 2.0
             #pragma vertex vert
             #pragma fragment frag
 
+            #pragma multi_compile _ ENABLE_VS_SKINNING
+
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
             struct attributes
             {
@@ -62,6 +59,55 @@ Shader "SoFunny/Utils/MaterialID"
                 //_ColorID.rgb *= i.vertexSH.rgb;
                 return _ColorID;
             }
+            ENDHLSL
+        }
+
+        Pass
+        {
+            Name "DepthOnly"
+            Tags { "LightMode" = "DepthOnly" }
+
+            ZWrite On   // must output z-value
+            ColorMask R // one channel output
+
+            Cull Back
+
+            HLSLPROGRAM
+            #pragma target 2.0
+            #pragma vertex vert
+            #pragma fragment frag
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+            #pragma multi_compile_instancing
+
+            #pragma multi_compile _ ENABLE_VS_SKINNING
+
+            struct Attributes
+            {
+                float4 positionOS : POSITION;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
+
+            struct Varyings
+            {
+                float4 positionCS : SV_POSITION;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
+
+
+            Varyings vert(Attributes input)
+            {
+                Varyings output = (Varyings)0;
+                UNITY_SETUP_INSTANCE_ID(input);
+                output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
+                return output;
+            }
+
+            half frag(Varyings input) : SV_TARGET
+            {
+                return input.positionCS.z;
+            }
+
             ENDHLSL
         }
     }

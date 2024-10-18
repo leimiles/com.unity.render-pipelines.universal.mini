@@ -5,6 +5,12 @@ using UnityEngine.Rendering.Universal;
 
 public static class MiniRPController
 {
+
+    static int opaqueLayerMask = 1;
+    static int transparentLayerMask = 1;
+    static bool shadowState = true;
+    static List<bool> featureStates = new List<bool>();
+
     public static DrawMode CurrentDrawMode = DrawMode.Normal;
     public enum DrawMode
     {
@@ -15,8 +21,15 @@ public static class MiniRPController
         VariantID
     }
     private static UniversalRenderPipelineAsset currentAsset;
+    internal static UniversalRenderPipelineAsset CurrentAsset
+    {
+        get => currentAsset;
+        set
+        {
+            currentAsset = value;
+        }
+    }
     private static UniversalRendererData currentRendererData;
-
     internal static UniversalRendererData CurrentRendererData
     {
         get => currentRendererData;
@@ -29,7 +42,6 @@ public static class MiniRPController
 #endif
         }
     }
-    internal static UniversalRenderPipelineAsset CurrentAsset { get => currentAsset; set => currentAsset = value; }
 
     public static void DebugMainLightShadow()
     {
@@ -46,24 +58,40 @@ public static class MiniRPController
         }
     }
 
-    /*
-    static int m_RenderingMode = 0;
-    public static void DebugRenderingPath()
-    {
-        if (currentRendererData != null)
-        {
-            currentRendererData.renderingMode = (RenderingMode)(m_RenderingMode);
-            m_RenderingMode++;
-            if (m_RenderingMode > 2)
-            {
-                m_RenderingMode = 0;
-            }
-        }
-    }
-    */
-
     public static void DebugDraw(DrawMode drawMode)
     {
         CurrentDrawMode = drawMode;
+        if (CurrentRendererData != null && CurrentAsset != null)
+        {
+            if (CurrentDrawMode != DrawMode.Normal)
+            {
+
+                CurrentRendererData.opaqueLayerMask = 0;
+                CurrentRendererData.transparentLayerMask = 0;
+                /*
+                if (CurrentRendererData.rendererFeatures.Count > 0)
+                {
+                    foreach (var feature in CurrentRendererData.rendererFeatures)
+                    {
+                        feature.SetActive(false);
+                    }
+                }
+                */
+                CurrentAsset.supportsMainLightShadows = false;
+            }
+            else
+            {
+                CurrentRendererData.opaqueLayerMask = -1;
+                CurrentRendererData.transparentLayerMask = -1;
+                /*
+                for (int i = 0; i < CurrentRendererData.rendererFeatures.Count; i++)
+                {
+                    CurrentRendererData.rendererFeatures[i].SetActive(true);
+                }
+                CurrentAsset.supportsMainLightShadows = true;
+                */
+
+            }
+        }
     }
 }

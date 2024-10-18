@@ -1132,11 +1132,10 @@ namespace UnityEngine.Rendering.Universal
             EnqueuePass(m_OnRenderObjectCallbackPass);
 
 #if (WX_PERFORMANCE_MODE && UNITY_EDITOR)
-            if (cameraData.cameraType == CameraType.SceneView && MiniRPController.CurrentDrawMode != MiniRPController.DrawMode.Normal)
+            if (MiniRPController.CurrentDrawMode != MiniRPController.DrawMode.Normal && cameraData.cameraType == CameraType.SceneView)
             {
                 EnqueuePass(m_MaterialIDPass);
             }
-
 #endif
 
 

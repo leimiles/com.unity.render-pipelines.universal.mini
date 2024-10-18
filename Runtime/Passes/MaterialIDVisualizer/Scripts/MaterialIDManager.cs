@@ -10,7 +10,6 @@ public static class MaterialIDManager
     static void SetRenders()
     {
         renderers = GameObject.FindObjectsOfType<Renderer>();
-        Debug.Log(renderers.Length);
         SetErrorMaterial();
     }
     static MaterialPropertyBlock materialPropertyBlock;
@@ -22,6 +21,15 @@ public static class MaterialIDManager
             errorMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("Hidden/InternalErrorShader"));
         }
     }
+
+    public static void ClearMaterialBlock()
+    {
+        if (materialPropertyBlock != null)
+        {
+            materialPropertyBlock.Clear();
+        }
+    }
+
     public static void SetColorIDsByMaterials()
     {
         SetRenders();

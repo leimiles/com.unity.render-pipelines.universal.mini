@@ -4,7 +4,7 @@ using UnityEngine;
 [InitializeOnLoad]
 public class MaterialIDEditor
 {
-    static Vector2 buttonSize = new Vector2(100, 20);
+    static Vector2 buttonSize = new Vector2(80, 20);
     static Vector2 infoSize = new Vector2(300, 150);
     static MaterialIDEditor()
     {
@@ -26,6 +26,7 @@ public class MaterialIDEditor
         if (GUI.Button(new Rect(Screen.width / 2 - buttonSize.x * 2 - buttonSize.x / 2, 0, buttonSize.x, buttonSize.y), "Normal"))
         {
             MiniRPController.DebugDraw(MiniRPController.DrawMode.Normal);
+            MaterialIDManager.ClearMaterialBlock();
         }
         if (GUI.Button(new Rect(Screen.width / 2 - buttonSize.x * 1 - buttonSize.x / 2, 0, buttonSize.x, buttonSize.y), "Material ID"))
         {
