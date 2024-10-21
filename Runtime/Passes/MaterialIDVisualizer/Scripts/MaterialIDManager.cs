@@ -131,7 +131,10 @@ public static class MaterialIDManager
                 mesh = (renderer as MeshRenderer)?.GetComponent<MeshFilter>().sharedMesh;
                 if (mesh == null)
                 {
-                    mesh = renderer.GetComponent<SkinnedMeshRenderer>()?.sharedMesh;
+                    if (renderer.GetComponent<SkinnedMeshRenderer>() != null)
+                    {
+                        mesh = renderer.GetComponent<SkinnedMeshRenderer>().sharedMesh;
+                    }
                 }
                 if (mesh == null)
                 {
