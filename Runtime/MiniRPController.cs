@@ -5,12 +5,6 @@ using UnityEngine.Rendering.Universal;
 
 public static class MiniRPController
 {
-
-    static int opaqueLayerMask = 1;
-    static int transparentLayerMask = 1;
-    static bool shadowState = true;
-    static List<bool> featureStates = new List<bool>();
-
     public static DrawMode CurrentDrawMode = DrawMode.Normal;
     public enum DrawMode
     {

@@ -57,7 +57,7 @@ public class MaterialIDEditor
             case MiniRPController.DrawMode.Normal:
                 break;
             case MiniRPController.DrawMode.MaterialID:
-                GUI.Label(rect, "MaterialID Count: " + 0);
+                GUI.Label(rect, "MaterialID Count: " + MaterialIDManager.MaterialIDsCount);
                 break;
             case MiniRPController.DrawMode.MeshID:
                 GUI.Label(rect, "MeshID Count: " + 0);

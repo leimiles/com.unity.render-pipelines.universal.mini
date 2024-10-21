@@ -1,4 +1,4 @@
-Shader "SoFunny/Utils/MaterialID"
+Shader "Hidden/SoFunny/Utils/MaterialID"
 {
     Properties
     {
