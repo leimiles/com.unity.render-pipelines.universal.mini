@@ -6,8 +6,6 @@ using UnityEngine;
 
 public class MaterialIDPass : ScriptableRenderPass
 {
-    RTHandle[] m_ColorTargetIndentifiers;
-    RTHandle m_DepthTargetIndentifiers;
     List<ShaderTagId> shaderTagIds = new List<ShaderTagId>
     {
         new("UniversalForward"),
@@ -24,13 +22,6 @@ public class MaterialIDPass : ScriptableRenderPass
         renderPassEvent = RenderPassEvent.BeforeRenderingOpaques;
     }
 
-    public void Setup(RTHandle colorAttachment, RTHandle renderingLayersTexture, RTHandle depthAttachment)
-    {
-        m_ColorTargetIndentifiers[0] = colorAttachment;
-        m_ColorTargetIndentifiers[1] = renderingLayersTexture;
-        m_DepthTargetIndentifiers = depthAttachment;
-    }
-
     public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
     {
         CommandBuffer commandBuffer = CommandBufferPool.Get();
@@ -44,12 +35,6 @@ public class MaterialIDPass : ScriptableRenderPass
         commandBuffer.Clear();
         CommandBufferPool.Release(commandBuffer);
     }
-    /*
-    public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
-    {
-        ConfigureTarget(m_ColorTargetIndentifiers, m_DepthTargetIndentifiers);
-    }
-    */
 
     void Draw(ScriptableRenderContext context, ref RenderingData renderingData)
     {
