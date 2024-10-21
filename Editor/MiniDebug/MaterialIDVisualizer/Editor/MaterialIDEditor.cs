@@ -35,14 +35,17 @@ public class MaterialIDEditor
         }
         if (GUI.Button(new Rect(Screen.width / 2 - buttonSize.x / 2, 0, buttonSize.x, buttonSize.y), "Mesh ID"))
         {
+            MaterialIDManager.SetColorIDsByMeshes();
             MiniRPController.DebugDraw(MiniRPController.DrawMode.MeshID);
         }
         if (GUI.Button(new Rect(Screen.width / 2 + buttonSize.x * 1 - buttonSize.x / 2, 0, buttonSize.x, buttonSize.y), "Shader ID"))
         {
+            MaterialIDManager.SetColorIDsByShaders();
             MiniRPController.DebugDraw(MiniRPController.DrawMode.ShaderID);
         }
         if (GUI.Button(new Rect(Screen.width / 2 + buttonSize.x * 2 - buttonSize.x / 2, 0, buttonSize.x, buttonSize.y), "Variant ID"))
         {
+            MaterialIDManager.SetColorIDsByShaderVariants();
             MiniRPController.DebugDraw(MiniRPController.DrawMode.VariantID);
         }
         Handles.EndGUI();
@@ -60,13 +63,13 @@ public class MaterialIDEditor
                 GUI.Label(rect, "MaterialID Count: " + MaterialIDManager.MaterialIDsCount);
                 break;
             case MiniRPController.DrawMode.MeshID:
-                GUI.Label(rect, "MeshID Count: " + 0);
+                GUI.Label(rect, "MeshID Count: " + MaterialIDManager.MeshIDsCount);
                 break;
             case MiniRPController.DrawMode.ShaderID:
-                GUI.Label(rect, "ShaderID Count: " + 0);
+                GUI.Label(rect, "ShaderID Count: " + MaterialIDManager.ShaderIDsCount);
                 break;
             case MiniRPController.DrawMode.VariantID:
-                GUI.Label(rect, "VariantID Count: " + 0);
+                GUI.Label(rect, "VariantID Count: " + MaterialIDManager.VariantIDsCount);
                 break;
         }
         Handles.EndGUI();

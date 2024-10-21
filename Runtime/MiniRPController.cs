@@ -5,7 +5,14 @@ using UnityEngine.Rendering.Universal;
 
 public static class MiniRPController
 {
-    public static DrawMode CurrentDrawMode = DrawMode.Normal;
+    static DrawMode currentDrawMode = DrawMode.Normal;
+    public static DrawMode CurrentDrawMode
+    {
+        get
+        {
+            return currentDrawMode;
+        }
+    }
     public enum DrawMode
     {
         Normal,
@@ -54,7 +61,7 @@ public static class MiniRPController
 
     public static void DebugDraw(DrawMode drawMode)
     {
-        CurrentDrawMode = drawMode;
+        currentDrawMode = drawMode;
         if (CurrentRendererData != null && CurrentAsset != null)
         {
             if (CurrentDrawMode != DrawMode.Normal)
