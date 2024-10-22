@@ -24,7 +24,7 @@ public class MaterialIDPass : ScriptableRenderPass
 
     public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
     {
-        CommandBuffer commandBuffer = CommandBufferPool.Get();
+        CommandBuffer commandBuffer = renderingData.commandBuffer;
         using (new ProfilingScope(commandBuffer, m_ProfilingSampler))
         {
             context.ExecuteCommandBuffer(commandBuffer);
@@ -33,7 +33,6 @@ public class MaterialIDPass : ScriptableRenderPass
         }
         context.ExecuteCommandBuffer(commandBuffer);
         commandBuffer.Clear();
-        CommandBufferPool.Release(commandBuffer);
     }
 
     void Draw(ScriptableRenderContext context, ref RenderingData renderingData)
