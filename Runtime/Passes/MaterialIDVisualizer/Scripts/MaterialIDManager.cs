@@ -39,7 +39,7 @@ public static class MaterialIDManager
                 else
                 {
                     string shaderAndVariantsName = renderer.sharedMaterials[i].shader.name; // use shader name first
-                    shaderAndVariantsName += string.Join(' ', renderer.sharedMaterials[i].shaderKeywords);      // only local keywords
+                    shaderAndVariantsName += string.Join(' ', renderer.sharedMaterials[i].enabledKeywords);      // only local keywords, don's use material.shaderKeywords api
                     SetColorIDsByShaderVariant(shaderAndVariantsName);
                     materialPropertyBlock.SetColor(Shader.PropertyToID("_ColorID"), colorIDsByShaderVariant[shaderAndVariantsName]);
                 }
