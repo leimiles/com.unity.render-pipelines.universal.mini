@@ -19,7 +19,7 @@ public class MaterialIDPass : ScriptableRenderPass
     public MaterialIDPass()
     {
         m_OverrideMaterial = CoreUtils.CreateEngineMaterial(Shader.Find("Hidden/SoFunny/Utils/MaterialID"));
-        renderPassEvent = RenderPassEvent.BeforeRenderingOpaques;
+        renderPassEvent = RenderPassEvent.AfterRenderingTransparents;
     }
 
     public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
