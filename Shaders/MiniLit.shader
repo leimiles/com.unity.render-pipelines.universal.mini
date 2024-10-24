@@ -32,6 +32,7 @@ Shader "SoFunny/Mini/MiniLit"
 
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
             #pragma multi_compile _ ENABLE_VS_SKINNING
+            #pragma multi_compile_instancing
 
             #pragma multi_compile _ LIGHTMAP_ON
             #pragma multi_compile _ DIRLIGHTMAP_COMBINED
